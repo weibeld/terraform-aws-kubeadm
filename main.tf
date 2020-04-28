@@ -94,20 +94,32 @@ data "aws_ami" "ubuntu" {
 }
 
 # TODO:
-#   [ ] Generate token dynamically
+#   [X] Generate token dynamically
 #   [ ] Add extra SAN with public IP address of master node to API server certificate (probably requires using EIPs)
 #   [ ] Download kubeconfig files to local machine
 
+resource "random_string" "token_id" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
+resource "random_string" "token_secret" {
+  length  = 16
+  special = false
+  upper   = false
+}
+
 locals {
   install_kubeadm = <<-EOF
-    apt-get update
-    apt-get install -y apt-transport-https curl
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-    apt-get update
-    apt-get install -y docker.io kubeadm
-    EOF
-  token           = "zq7c0d.zc8dk1e8v0bj54c8"
+  apt-get update
+  apt-get install -y apt-transport-https curl
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
+  apt-get update
+  apt-get install -y docker.io kubeadm
+  EOF
+  token           = "${random_string.token_id.result}.${random_string.token_secret.result}"
 }
 
 resource "aws_instance" "master" {
@@ -118,8 +130,8 @@ resource "aws_instance" "master" {
   key_name                    = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     aws_security_group.base.id,
-    aws_security_group.k8s.id,
-    aws_security_group.ssh.id
+    aws_security_group.ssh.id,
+    aws_security_group.k8s.id
   ]
   user_data = <<-EOF
   #!/bin/bash
@@ -142,6 +154,8 @@ resource "aws_instance" "workers" {
   user_data = <<-EOF
   #!/bin/bash
   ${local.install_kubeadm}
-  kubeadm join ${aws_instance.master.private_ip}:6443 --discovery-token-unsafe-skip-ca-verification --token ${local.token}
+  kubeadm join ${aws_instance.master.private_ip}:6443 \
+    --discovery-token-unsafe-skip-ca-verification \
+    --token ${local.token}
   EOF
 }
