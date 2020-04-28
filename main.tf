@@ -93,6 +93,11 @@ data "aws_ami" "ubuntu" {
   most_recent = true
 }
 
+# TODO:
+#   [ ] Generate token dynamically
+#   [ ] Add extra SAN with public IP address of master node to API server certificate (probably requires using EIPs)
+#   [ ] Download kubeconfig files to local machine
+
 locals {
   install_kubeadm = <<-EOF
     apt-get update
