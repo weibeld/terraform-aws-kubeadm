@@ -2,7 +2,7 @@ output "master" {
   value = {
     id         = aws_instance.master.id
     private_ip = aws_instance.master.private_ip
-    public_ip  = aws_instance.master.public_ip
+    public_ip  = aws_eip.master.public_ip
   }
 }
 

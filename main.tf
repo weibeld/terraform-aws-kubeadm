@@ -96,7 +96,8 @@ data "aws_ami" "ubuntu" {
 # TODO:
 #   [X] Generate token dynamically
 #   [ ] Add extra SAN with public IP address of master node to API server certificate (probably requires using EIPs)
-#   [ ] Download kubeconfig files to local machine
+#   [ ] Download kubeconfig file to local machine
+#   [ ] Reduce TTL of bootstrap token
 
 resource "random_string" "token_id" {
   length  = 6
@@ -112,22 +113,31 @@ resource "random_string" "token_secret" {
 
 locals {
   install_kubeadm = <<-EOF
-  apt-get update
-  apt-get install -y apt-transport-https curl
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-  apt-get update
-  apt-get install -y docker.io kubeadm
-  EOF
+    apt-get update
+    apt-get install -y apt-transport-https curl
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
+    apt-get update
+    apt-get install -y docker.io kubeadm
+    EOF
   token           = "${random_string.token_id.result}.${random_string.token_secret.result}"
 }
 
+resource "aws_eip" "master" {
+  vpc        = true
+  depends_on = [aws_internet_gateway.main]
+}
+
+resource "aws_eip_association" "master" {
+  allocation_id = aws_eip.master.id
+  instance_id   = aws_instance.master.id
+}
+
 resource "aws_instance" "master" {
-  ami                         = data.aws_ami.ubuntu.image_id
-  instance_type               = "t2.medium"
-  subnet_id                   = aws_subnet.main.id
-  associate_public_ip_address = true
-  key_name                    = aws_key_pair.main.key_name
+  ami           = data.aws_ami.ubuntu.image_id
+  instance_type = "t2.medium"
+  subnet_id     = aws_subnet.main.id
+  key_name      = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     aws_security_group.base.id,
     aws_security_group.ssh.id,
@@ -136,7 +146,10 @@ resource "aws_instance" "master" {
   user_data = <<-EOF
   #!/bin/bash
   ${local.install_kubeadm}
-  kubeadm init --token ${local.token}
+  kubeadm init --token ${local.token} --apiserver-cert-extra-sans ${aws_eip.master.public_ip}
+  cp /etc/kubernetes/admin.conf /home/ubuntu/kubeconfig
+  chown ubuntu:ubuntu /home/ubuntu/kubeconfig
+  kubectl --kubeconfig /home/ubuntu/kubeconfig config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
   EOF
 }
 
@@ -158,4 +171,14 @@ resource "aws_instance" "workers" {
     --discovery-token-unsafe-skip-ca-verification \
     --token ${local.token}
   EOF
+}
+
+# Download the kubeconfig file created by kubeadm from the master node
+resource "null_resource" "get_kubeconfig" {
+  provisioner "local-exec" {
+    command = "while ! scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file} ubuntu@${aws_eip.master.public_ip}:kubeconfig . &>/dev/null; do sleep 1; done"
+  }
+  triggers = {
+    instance_ids = join(",", concat([aws_instance.master.id], aws_instance.workers[*].id))
+  }
 }

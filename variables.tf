@@ -3,6 +3,11 @@ variable "localhost_ip" {
   description = "IP address of the local machine (this IP address will get SSH access to the instances)."
 }
 
+variable "private_key_file" {
+  type        = string
+  description = "Private key file on the local machine (e.g. '~/.ssh/id_rsa')."
+}
+
 variable "public_key_file" {
   type        = string
   description = "Public key file in OpenSSH format on the local machine (e.g. '~/.ssh/id_rsa.pub')."
