@@ -178,7 +178,7 @@ resource "aws_instance" "workers" {
 }
 
 locals {
-  kubeconfig = "conf"
+  kubeconfig = "kubeconfig"
 }
 
 # Wait for bootstrap to finish and download kubeconfig file
