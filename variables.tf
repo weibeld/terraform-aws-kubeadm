@@ -19,6 +19,18 @@ variable "pod_network_cidr" {
   default     = ""
 }
 
+variable "master_instance_type" {
+  type        = string
+  description = "EC2 instance type for the master node (must have at least 2 CPUs)."
+  default     = "t2.medium"
+}
+
+variable "worker_instance_type" {
+  type        = string
+  description = "EC2 instance type for the worker nodes."
+  default     = "t2.small"
+}
+
 variable "region" {
   type        = string
   description = "AWS region in which to create the cluster."

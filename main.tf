@@ -136,7 +136,7 @@ resource "aws_eip_association" "master" {
 
 resource "aws_instance" "master" {
   ami           = data.aws_ami.ubuntu.image_id
-  instance_type = "t2.medium"
+  instance_type = var.master_instance_type
   subnet_id     = aws_subnet.main.id
   key_name      = aws_key_pair.main.key_name
   vpc_security_group_ids = [
@@ -163,7 +163,7 @@ resource "aws_instance" "master" {
 resource "aws_instance" "workers" {
   count                       = 2
   ami                         = data.aws_ami.ubuntu.image_id
-  instance_type               = "t2.small"
+  instance_type               = var.worker_instance_type
   subnet_id                   = aws_subnet.main.id
   associate_public_ip_address = true
   key_name                    = aws_key_pair.main.key_name
