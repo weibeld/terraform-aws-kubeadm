@@ -149,8 +149,10 @@ resource "aws_instance" "master" {
   ${local.install_kubeadm}
   kubeadm init \
     --token ${local.token} \
-    --token-ttl 20m \
-    --apiserver-cert-extra-sans ${aws_eip.master.public_ip}
+    --token-ttl 15m \
+    --apiserver-cert-extra-sans ${aws_eip.master.public_ip} \
+    %{if var.pod_network_cidr != ""}--pod-network-cidr "${var.pod_network_cidr}"%{endif}
+  # Prepare kubeconfig file for download to local machine
   cp /etc/kubernetes/admin.conf /home/ubuntu
   chown ubuntu:ubuntu /home/ubuntu/admin.conf
   kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443

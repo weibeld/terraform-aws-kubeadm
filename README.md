@@ -47,6 +47,8 @@ The above command creates AWS infrastructure and bootstraps a Kubernetes cluster
 
 After a few minutes, the command should complete and you should have a file named `kubeconfig` in your current working directory. This is the kubeconfig file with which you will be able to access your cluster in the next step.
 
+> You can skip the manual approval of the command with `terraform apply --auto-approve`.
+
 ### Access the cluster
 
 You can access the cluster with the kubeconfig file created by the above command:
@@ -63,7 +65,7 @@ At this point, you can install a CNI plugin in your cluster. For example:
 kubectl --kubeconfig kubeconfig apply -f https://raw.githubusercontent.com/cilium/cilium/1.7.0/install/kubernetes/quick-install.yaml
 ```
 
-> You can set the `KUBECONFIG` environment variable to `$(pwd)/kubeconfig` so that you don't need to pass the `--kubeconfig` flag to every command.
+> Instead of supplying the `--kubeconfig` flag for every command, you can do `export KUBECONFIG=$(pwd)/kubeconfig` to set your kubeconfig file as the default.
 
 ## Destroy the cluster
 
@@ -72,3 +74,6 @@ terraform destroy
 ```
 
 This command deletes the cluster and the entire AWS infrastructure that was created for it.
+
+> You can skip the manual approval of the command with `terraform destroy --auto-approve`.
+
