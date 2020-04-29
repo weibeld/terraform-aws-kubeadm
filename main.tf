@@ -151,7 +151,8 @@ resource "aws_instance" "master" {
     --token ${local.token} \
     --token-ttl 15m \
     --apiserver-cert-extra-sans ${aws_eip.master.public_ip} \
-    %{if var.pod_network_cidr != ""}--pod-network-cidr "${var.pod_network_cidr}"%{endif}
+    %{if var.pod_network_cidr != ""}--pod-network-cidr "${var.pod_network_cidr}"%{endif} \
+    --node-name master
   # Prepare kubeconfig file for download to local machine
   cp /etc/kubernetes/admin.conf /home/ubuntu
   chown ubuntu:ubuntu /home/ubuntu/admin.conf
@@ -174,8 +175,9 @@ resource "aws_instance" "workers" {
   #!/bin/bash
   ${local.install_kubeadm}
   kubeadm join ${aws_instance.master.private_ip}:6443 \
+    --token ${local.token} \
     --discovery-token-unsafe-skip-ca-verification \
-    --token ${local.token}
+    --node-name worker-${count.index}
   EOF
 }
 
@@ -184,7 +186,7 @@ locals {
 }
 
 # Wait for bootstrap to finish and download kubeconfig file
-resource "null_resource" "wait" {
+resource "null_resource" "waiting_for_bootstrap_to_finish" {
   provisioner "local-exec" {
     command = "while ! scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file} ubuntu@${aws_eip.master.public_ip}:admin.conf ${local.kubeconfig} &>/dev/null; do sleep 1; done"
   }
