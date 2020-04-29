@@ -15,8 +15,14 @@ variable "public_key_file" {
 
 variable "pod_network_cidr" {
   type        = string
-  description = "IP address range for the Pod network in CIDR format. If set, appropriate Pod subnet ranges will be automatically allocated to the nodes; if unset (default value \"\"), no Pod subnet allocation takes place."
+  description = "IP address range of the Pod network. If set, appropriate Pod subnet IP address ranges will be automatically allocated to the nodes; if unset (default value \"\"), no Pod subnet allocation takes place."
   default     = ""
+}
+
+variable "node_network_cidr" {
+  type        = string
+  description = "IP address range of the VPC subnet in which the cluster will be created (determines the private IP addresses of the cluster nodes)."
+  default     = "172.16.0.0/16"
 }
 
 variable "master_instance_type" {
