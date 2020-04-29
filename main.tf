@@ -144,6 +144,9 @@ resource "aws_instance" "master" {
     aws_security_group.ssh.id,
     aws_security_group.k8s.id
   ]
+  tags = {
+    k8s-node = "master"
+  }
   user_data = <<-EOF
   #!/bin/bash
   ${local.install_kubeadm}
@@ -171,6 +174,9 @@ resource "aws_instance" "workers" {
     aws_security_group.base.id,
     aws_security_group.ssh.id
   ]
+  tags = {
+    k8s-node = "worker-${count.index}"
+  }
   user_data = <<-EOF
   #!/bin/bash
   ${local.install_kubeadm}
