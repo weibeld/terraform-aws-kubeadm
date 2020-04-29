@@ -161,7 +161,7 @@ resource "aws_instance" "master" {
 }
 
 resource "aws_instance" "workers" {
-  count                       = 2
+  count                       = var.num_workers
   ami                         = data.aws_ami.ubuntu.image_id
   instance_type               = var.worker_instance_type
   subnet_id                   = aws_subnet.main.id

@@ -31,6 +31,12 @@ variable "worker_instance_type" {
   default     = "t2.small"
 }
 
+variable "num_workers" {
+  type        = number
+  description = "Number of worker nodes."
+  default     = 2
+}
+
 variable "region" {
   type        = string
   description = "AWS region in which to create the cluster."
