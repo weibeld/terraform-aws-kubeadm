@@ -95,9 +95,9 @@ data "aws_ami" "ubuntu" {
 
 # TODO:
 #   [X] Generate token dynamically
-#   [ ] Add extra SAN with public IP address of master node to API server certificate (probably requires using EIPs)
-#   [ ] Download kubeconfig file to local machine
-#   [ ] Reduce TTL of bootstrap token
+#   [X] Add extra SAN with public IP address of master node to API server certificate (probably requires using EIPs)
+#   [X] Download kubeconfig file to local machine
+#   [X] Reduce TTL of bootstrap token
 
 resource "random_string" "token_id" {
   length  = 6
@@ -123,6 +123,7 @@ locals {
   token           = "${random_string.token_id.result}.${random_string.token_secret.result}"
 }
 
+# EIP for master node because it must know its public IP during initialisation
 resource "aws_eip" "master" {
   vpc        = true
   depends_on = [aws_internet_gateway.main]
@@ -146,10 +147,13 @@ resource "aws_instance" "master" {
   user_data = <<-EOF
   #!/bin/bash
   ${local.install_kubeadm}
-  kubeadm init --token ${local.token} --apiserver-cert-extra-sans ${aws_eip.master.public_ip}
-  cp /etc/kubernetes/admin.conf /home/ubuntu/kubeconfig
-  chown ubuntu:ubuntu /home/ubuntu/kubeconfig
-  kubectl --kubeconfig /home/ubuntu/kubeconfig config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
+  kubeadm init \
+    --token ${local.token} \
+    --token-ttl 20m \
+    --apiserver-cert-extra-sans ${aws_eip.master.public_ip}
+  cp /etc/kubernetes/admin.conf /home/ubuntu
+  chown ubuntu:ubuntu /home/ubuntu/admin.conf
+  kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
   EOF
 }
 
@@ -173,10 +177,14 @@ resource "aws_instance" "workers" {
   EOF
 }
 
-# Download the kubeconfig file created by kubeadm from the master node
-resource "null_resource" "get_kubeconfig" {
+locals {
+  kubeconfig = "conf"
+}
+
+# Wait for bootstrap to finish and download kubeconfig file
+resource "null_resource" "wait" {
   provisioner "local-exec" {
-    command = "while ! scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file} ubuntu@${aws_eip.master.public_ip}:kubeconfig . &>/dev/null; do sleep 1; done"
+    command = "while ! scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file} ubuntu@${aws_eip.master.public_ip}:admin.conf ${local.kubeconfig} &>/dev/null; do sleep 1; done"
   }
   triggers = {
     instance_ids = join(",", concat([aws_instance.master.id], aws_instance.workers[*].id))

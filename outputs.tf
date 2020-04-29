@@ -1,3 +1,7 @@
+output "kubeconfig" {
+  value = abspath(local.kubeconfig)
+}
+
 output "master" {
   value = {
     id         = aws_instance.master.id
