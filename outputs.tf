@@ -1,5 +1,5 @@
 output "kubeconfig" {
-  value = abspath(local.kubeconfig)
+  value = local.kubeconfig_path
 }
 
 output "nodes" {

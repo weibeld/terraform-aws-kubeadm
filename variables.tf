@@ -1,3 +1,7 @@
+#------------------------------------------------------------------------------#
+# Required variables
+#------------------------------------------------------------------------------#
+
 variable "localhost_ip" {
   type        = string
   description = "IP address of the local machine (this IP address will get SSH access to the cluster nodes)."
@@ -13,15 +17,19 @@ variable "public_key_file" {
   description = "Public key file of a public/private key-pair on the local machine (must be in OpenSSH format)."
 }
 
+#------------------------------------------------------------------------------#
+# Optional variables
+#------------------------------------------------------------------------------#
+
 variable "pod_network_cidr" {
   type        = string
   description = "IP address range of the Pod network. If set, appropriate Pod subnet IP address ranges will be automatically allocated to the nodes; if unset (default value \"\"), no Pod subnet allocation takes place."
   default     = ""
 }
 
-variable "node_network_cidr" {
+variable "host_network_cidr" {
   type        = string
-  description = "IP address range of the VPC subnet in which the cluster will be created (determines the private IP addresses of the cluster nodes)."
+  description = "IP address range of the host network (private IP addresses of the cluster nodes)."
   default     = "172.16.0.0/16"
 }
 

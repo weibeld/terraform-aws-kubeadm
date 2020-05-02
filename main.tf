@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 resource "aws_vpc" "main" {
-  cidr_block = var.node_network_cidr
+  cidr_block = var.host_network_cidr
 }
 
 resource "aws_internet_gateway" "main" {
@@ -13,7 +13,7 @@ resource "aws_internet_gateway" "main" {
 
 resource "aws_subnet" "main" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.node_network_cidr
+  cidr_block = var.host_network_cidr
 }
 
 resource "aws_route_table" "main" {
@@ -29,29 +29,34 @@ resource "aws_route_table_association" "main" {
   subnet_id      = aws_subnet.main.id
 }
 
-resource "aws_security_group" "base" {
-  name        = "base"
-  description = "Allow all incoming traffic from same security group and all outgoing traffic"
+# The AWS provider removes the default egress rule from all security groups, so
+# it's necessary to define it explicitly
+resource "aws_security_group" "egress" {
+  name        = "egress"
+  description = "Allow all outgoing traffic to everywhere"
   vpc_id      = aws_vpc.main.id
-  ingress {
-    protocol    = -1
-    from_port   = 0
-    to_port     = 0
-    self        = true
-    description = "Allow all incoming traffic from same security group"
-  }
-  # The AWS provider removes the default egress rule, so it has to be redefined
   egress {
     protocol    = -1
     from_port   = 0
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outgoing traffic"
   }
 }
 
-resource "aws_security_group" "k8s" {
-  name        = "k8s"
+resource "aws_security_group" "ingress_internal" {
+  name        = "ingress-internal"
+  description = "Allow all incoming traffic from the host network and Pod network (if defined)"
+  vpc_id      = aws_vpc.main.id
+  ingress {
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = compact([var.host_network_cidr, var.pod_network_cidr])
+  }
+}
+
+resource "aws_security_group" "ingress_k8s" {
+  name        = "ingress-k8s"
   description = "Allow incoming Kubernetes traffic (TCP/6443) from everywhere"
   vpc_id      = aws_vpc.main.id
   ingress {
@@ -62,9 +67,9 @@ resource "aws_security_group" "k8s" {
   }
 }
 
-resource "aws_security_group" "ssh" {
-  name        = "ssh"
-  description = "Allow incoming SSH traffic (TCP/22) from the local machine"
+resource "aws_security_group" "ingress_ssh" {
+  name        = "ingress-ssh"
+  description = "Allow incoming SSH traffic (TCP/22) from a specific IP address"
   vpc_id      = aws_vpc.main.id
   ingress {
     protocol    = "tcp"
@@ -93,22 +98,20 @@ data "aws_ami" "ubuntu" {
   most_recent = true
 }
 
-# TODO:
-#   [X] Generate token dynamically
-#   [X] Add extra SAN with public IP address of master node to API server certificate (probably requires using EIPs)
-#   [X] Download kubeconfig file to local machine
-#   [X] Reduce TTL of bootstrap token
-
+# Generate bootstrap token
+# See https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/
 resource "random_string" "token_id" {
   length  = 6
   special = false
   upper   = false
 }
-
 resource "random_string" "token_secret" {
   length  = 16
   special = false
   upper   = false
+}
+locals {
+  token = "${random_string.token_id.result}.${random_string.token_secret.result}"
 }
 
 locals {
@@ -120,7 +123,6 @@ locals {
     apt-get update
     apt-get install -y docker.io kubeadm
     EOF
-  token           = "${random_string.token_id.result}.${random_string.token_secret.result}"
 }
 
 # EIP for master node because it must know its public IP during initialisation
@@ -140,9 +142,10 @@ resource "aws_instance" "master" {
   subnet_id     = aws_subnet.main.id
   key_name      = aws_key_pair.main.key_name
   vpc_security_group_ids = [
-    aws_security_group.base.id,
-    aws_security_group.ssh.id,
-    aws_security_group.k8s.id
+    aws_security_group.egress.id,
+    aws_security_group.ingress_internal.id,
+    aws_security_group.ingress_k8s.id,
+    aws_security_group.ingress_ssh.id
   ]
   tags = {
     k8s-node = "master"
@@ -171,8 +174,9 @@ resource "aws_instance" "workers" {
   associate_public_ip_address = true
   key_name                    = aws_key_pair.main.key_name
   vpc_security_group_ids = [
-    aws_security_group.base.id,
-    aws_security_group.ssh.id
+    aws_security_group.egress.id,
+    aws_security_group.ingress_internal.id,
+    aws_security_group.ingress_ssh.id
   ]
   tags = {
     k8s-node = "worker-${count.index}"
@@ -188,13 +192,13 @@ resource "aws_instance" "workers" {
 }
 
 locals {
-  kubeconfig = "kubeconfig"
+  kubeconfig_path = abspath("kubeconfig")
 }
 
 # Wait for bootstrap to finish and download kubeconfig file
-resource "null_resource" "waiting_for_bootstrap_to_finish" {
+resource "null_resource" "wait_for_bootstrap_to_" {
   provisioner "local-exec" {
-    command = "while ! scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file} ubuntu@${aws_eip.master.public_ip}:admin.conf ${local.kubeconfig} &>/dev/null; do sleep 1; done"
+    command = "while ! scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file} ubuntu@${aws_eip.master.public_ip}:admin.conf ${local.kubeconfig_path} &>/dev/null; do sleep 1; done"
   }
   triggers = {
     instance_ids = join(",", concat([aws_instance.master.id], aws_instance.workers[*].id))
