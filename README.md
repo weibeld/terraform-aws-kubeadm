@@ -57,8 +57,6 @@ You can access the cluster with the kubeconfig file created by the above command
 kubectl --kubeconfig kubeconfig get nodes
 ```
 
-> If you don't see all nodes yet, the cluster may still be bootstrapping. Just wait some few seconds and try again.
-
 At this point, you can install a CNI plugin in your cluster. For example:
 
 ```bash

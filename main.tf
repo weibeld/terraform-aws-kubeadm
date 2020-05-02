@@ -163,6 +163,7 @@ resource "aws_instance" "master" {
   cp /etc/kubernetes/admin.conf /home/ubuntu
   chown ubuntu:ubuntu /home/ubuntu/admin.conf
   kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
+  touch /home/ubuntu/done
   EOF
 }
 
@@ -188,6 +189,7 @@ resource "aws_instance" "workers" {
     --token ${local.token} \
     --discovery-token-unsafe-skip-ca-verification \
     --node-name worker-${count.index}
+  touch /home/ubuntu/done
   EOF
 }
 
@@ -195,10 +197,22 @@ locals {
   kubeconfig_path = abspath("kubeconfig")
 }
 
-# Wait for bootstrap to finish and download kubeconfig file
-resource "null_resource" "wait_for_bootstrap_to_" {
+# Wait for bootstrap on all nodes to finish and download kubeconfig file
+resource "null_resource" "waiting_for_bootstrap_to_finish" {
   provisioner "local-exec" {
-    command = "while ! scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file} ubuntu@${aws_eip.master.public_ip}:admin.conf ${local.kubeconfig_path} &>/dev/null; do sleep 1; done"
+    command = <<-EOF
+    alias ssh='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
+    alias scp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
+    while true; do
+      sleep 2
+      ! ssh ubuntu@${aws_eip.master.public_ip} [[ -f /home/ubuntu/done ]] &>/dev/null && continue
+      %{for worker_public_ip in aws_instance.workers[*].public_ip~}
+      ! ssh ubuntu@${worker_public_ip} [[ -f /home/ubuntu/done ]] &>/dev/null && continue
+      %{endfor~}
+      break
+    done
+    scp ubuntu@${aws_eip.master.public_ip}:admin.conf ${local.kubeconfig_path} &>/dev/null
+    EOF
   }
   triggers = {
     instance_ids = join(",", concat([aws_instance.master.id], aws_instance.workers[*].id))
