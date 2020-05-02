@@ -1,5 +1,8 @@
 output "kubeconfig" {
-  value = local.kubeconfig_path
+  value = {
+    file    = local.kubeconfig_path
+    env_var = "export KUBECONFIG=${local.kubeconfig_path}"
+  }
 }
 
 output "nodes" {
