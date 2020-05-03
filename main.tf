@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 0.12"
+}
+
 provider "aws" {
   # Credentials are read from ~/.aws/credentials
   region = var.region
@@ -85,17 +89,17 @@ data "local_file" "public_key" {
 
 # Performs 'ImportKeyPair' API operation (not 'CreateKeyPair')
 resource "aws_key_pair" "main" {
-  key_name_prefix = "example-infra-terraform-"
+  key_name_prefix = "terraform-aws-kubeadm-"
   public_key      = data.local_file.public_key.content
 }
 
 data "aws_ami" "ubuntu" {
-  owners = ["099720109477"] # AWS account ID of Canonical
+  owners      = ["099720109477"] # AWS account ID of Canonical
+  most_recent = true
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
   }
-  most_recent = true
 }
 
 # Generate bootstrap token
