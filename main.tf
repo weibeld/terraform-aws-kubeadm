@@ -1,3 +1,10 @@
+# TODO.
+#   [x] Replace localhost_ip variable with allowed_ssh_cidrs (list(string)) which defines the IP addresses that are allowed to make SSH connections to the EC2 instances. Default value ["0.0.0.0/0"], in which case SSH connections are allowed from everyhwere 
+#   [x] Add allowed_k8s_cidrs (type list(string)) which defines IP addresses that are allowed to make Kubernetes API requests (TCP/6443) to the master node. Default value ["0.0.0.0/0"] in which case Kubernetes API requests are allowed from everywhere (assign in aws_security_group with cidr_blocks = var.allowed_k8s_cidrs)
+#   [ ] In pod_network_cidr variable, replace default value "" with null
+#   [ ] Add a cluster_name variable and add this as a tag to all created resources (k8s-cluster=<cluster_name>)
+#   [ ] Prefix security group names with var.cluster_name
+
 terraform {
   required_version = ">= 0.12"
 }
@@ -49,7 +56,7 @@ resource "aws_security_group" "egress" {
 
 resource "aws_security_group" "ingress_internal" {
   name        = "ingress-internal"
-  description = "Allow all incoming traffic from the host network and Pod network (if defined)"
+  description = "Allow all incoming traffic from inside the cluster (nodes and pods)."
   vpc_id      = aws_vpc.main.id
   ingress {
     protocol    = -1
@@ -61,25 +68,25 @@ resource "aws_security_group" "ingress_internal" {
 
 resource "aws_security_group" "ingress_k8s" {
   name        = "ingress-k8s"
-  description = "Allow incoming Kubernetes traffic (TCP/6443) from everywhere"
+  description = "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
   vpc_id      = aws_vpc.main.id
   ingress {
     protocol    = "tcp"
     from_port   = 6443
     to_port     = 6443
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.allowed_k8s_cidr_blocks
   }
 }
 
 resource "aws_security_group" "ingress_ssh" {
   name        = "ingress-ssh"
-  description = "Allow incoming SSH traffic (TCP/22) from a specific IP address"
+  description = "Allow incoming SSH traffic (TCP/22) from outside the cluster"
   vpc_id      = aws_vpc.main.id
   ingress {
     protocol    = "tcp"
     from_port   = 22
     to_port     = 22
-    cidr_blocks = ["${var.localhost_ip}/32"]
+    cidr_blocks = var.allowed_ssh_cidr_blocks
   }
 }
 

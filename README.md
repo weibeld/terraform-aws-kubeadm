@@ -115,5 +115,3 @@ For example:
 You can list all resources that you have in a given region in the [Tag Editor](https://console.aws.amazon.com/resource-groups/tag-editor) of the AWS Console.
 
 > Note that [Key Pairs][key] are not listed in the Tag Editor.
-
-

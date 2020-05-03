@@ -2,11 +2,6 @@
 # Required variables
 #------------------------------------------------------------------------------#
 
-variable "localhost_ip" {
-  type        = string
-  description = "IP address of the local machine (this IP address will get SSH access to the cluster nodes)."
-}
-
 variable "private_key_file" {
   type        = string
   description = "Private key file of a public/private key-pair on the local machine."
@@ -20,6 +15,18 @@ variable "public_key_file" {
 #------------------------------------------------------------------------------#
 # Optional variables
 #------------------------------------------------------------------------------#
+
+variable "allowed_ssh_cidr_blocks" {
+  type        = list(string)
+  description = "CIDR blocks that are allowed to make SSH connections to the EC2 instances. By default, SSH connections are allowed from everywhere."
+  default     = ["0.0.0.0/0"]
+}
+
+variable "allowed_k8s_cidr_blocks" {
+  type        = list(string)
+  description = "CIDR blocks that are allowed to make Kubernetes API requests to the API server of the cluster. By default, Kubernetes API requests are allowed from everywhere. Note that Kubernetes API requests from nodes and pods inside the cluster are always allowed, regardless of the value of this variable."
+  default     = ["0.0.0.0/0"]
+}
 
 variable "pod_network_cidr" {
   type        = string
