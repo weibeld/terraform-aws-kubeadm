@@ -75,3 +75,45 @@ This command deletes the cluster and the entire AWS infrastructure that was crea
 
 > You can skip the manual approval of the command with `terraform destroy --auto-approve`.
 
+## AWS resources
+
+With the default values (1 master node + 2 worker nodes = 3 nodes total), the module results in the creation of the following AWS resources:
+
+| Explicitly created        | Implicitly created (default sub-resources)                          |
+|---------------------------|---------------------------------------------------------------------|
+| 1 [VPC][vpc]              | 1 [Route Table][rtb], 1 [Security Group][sg], 1 [Network ACL][acl]  |
+| 1 [Subnet][subnet]        |                                                                     |
+| 1 [Internet Gateway][igw] |                                                                     |
+| 1 [Route Table][rtb]      |                                                                     |
+| 4 [Security Groups][sg]   |                                                                     |
+| 1 [Key Pair][key]         |                                                                     |
+| 1 [Elastic IP][eip]       |                                                                     |
+| 3 [EC2 Instances][i]      | 3 [Volumes][vol], 3 [Network Interfaces][eni]                       |
+
+[vpc]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+[acl]: https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html
+[rtb]: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html
+[sg]: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
+[subnet]: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
+[igw]: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html
+[eip]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+[i]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html
+[vol]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html
+[eni]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html
+[key]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
+
+**Total: 22 resources**
+
+With each added or removed worker node, you can add or subtract 3 from the total number of resources, since each EC2 instance results in the creation of 3 resources (the instance itself, the volume, and the network interface).
+
+For example:
+
+- With 1 worker node (2 nodes total), the total number of resources is 19
+- With 2 worker nodes (3 nodes total), the total number of resources is 22
+- With 3 worker nodes (4 nodes total), the total number of resources is 25
+
+You can list all resources that you have in a given region in the [Tag Editor](https://console.aws.amazon.com/resource-groups/tag-editor) of the AWS Console.
+
+> Note that [Key Pairs][key] are not listed in the Tag Editor.
+
+
