@@ -24,14 +24,14 @@ variable "allowed_ssh_cidr_blocks" {
 
 variable "allowed_k8s_cidr_blocks" {
   type        = list(string)
-  description = "CIDR blocks that are allowed to make Kubernetes API requests to the API server of the cluster. By default, Kubernetes API requests are allowed from everywhere. Note that Kubernetes API requests from nodes and pods inside the cluster are always allowed, regardless of the value of this variable."
+  description = "CIDR blocks that are allowed to make Kubernetes API requests to the API server of the cluster. By default, Kubernetes API requests are allowed from everywhere. Note that Kubernetes API requests from nodes and Pods inside the cluster are always allowed, regardless of the value of this variable."
   default     = ["0.0.0.0/0"]
 }
 
-variable "pod_network_cidr" {
+variable "pod_network_cidr_block" {
   type        = string
-  description = "IP address range of the Pod network. If set, appropriate Pod subnet IP address ranges will be automatically allocated to the nodes; if unset (default value \"\"), no Pod subnet allocation takes place."
-  default     = ""
+  description = "CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (sets field .spec.podCIDR of the node objects). If unset, the cluster is created without an explicitly determined Pod network IP address range, and the nodes receive no Pod subnet IP address range allocations (the .spec.podCIDR field of the nodes is not set)."
+  default     = null
 }
 
 variable "host_network_cidr" {
