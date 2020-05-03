@@ -16,6 +16,12 @@ variable "public_key_file" {
 # Optional variables
 #------------------------------------------------------------------------------#
 
+variable "cluster_name" {
+  type        = string
+  description = "Name for the Kubernetes cluster. This name will be used for tagging the created AWS resources. If set to null, a random name is automatically generated."
+  default     = null
+}
+
 variable "allowed_ssh_cidr_blocks" {
   type        = list(string)
   description = "CIDR blocks that are allowed to make SSH connections to the EC2 instances. By default, SSH connections are allowed from everywhere."
@@ -30,7 +36,7 @@ variable "allowed_k8s_cidr_blocks" {
 
 variable "pod_network_cidr_block" {
   type        = string
-  description = "CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (sets field .spec.podCIDR of the node objects). If unset, the cluster is created without an explicitly determined Pod network IP address range, and the nodes receive no Pod subnet IP address range allocations (the .spec.podCIDR field of the nodes is not set)."
+  description = "CIDR block for the Pod network of the cluster. If set to a valid value, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (sets the .spec.podCIDR field of the node objects). If set to null, the cluster is created without an explicitly determined Pod network IP address range, and the nodes receive no Pod subnet IP address range allocations (the .spec.podCIDR field of the nodes is not set)."
   default     = null
 }
 

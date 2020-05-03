@@ -2,7 +2,7 @@
 #   [x] Replace localhost_ip variable with allowed_ssh_cidrs (list(string)) which defines the IP addresses that are allowed to make SSH connections to the EC2 instances. Default value ["0.0.0.0/0"], in which case SSH connections are allowed from everyhwere 
 #   [x] Add allowed_k8s_cidrs (type list(string)) which defines IP addresses that are allowed to make Kubernetes API requests (TCP/6443) to the master node. Default value ["0.0.0.0/0"] in which case Kubernetes API requests are allowed from everywhere (assign in aws_security_group with cidr_blocks = var.allowed_k8s_cidrs)
 #   [x] In pod_network_cidr variable, replace default value "" with null
-#   [ ] Add a cluster_name variable and add this as a tag to all created resources (k8s-cluster=<cluster_name>)
+#   [x] Add a cluster_name variable and add this as a tag to all created resources (k8s-cluster=<cluster_name>)
 #   [ ] Prefix security group names with var.cluster_name
 
 terraform {
@@ -14,17 +14,29 @@ provider "aws" {
   region = var.region
 }
 
+resource "random_pet" "cluster_name" {}
+
+locals {
+  common_tags = {
+    managed-by  = "terraform-aws-kubeadm"
+    k8s-cluster = var.cluster_name != null ? var.cluster_name : random_pet.cluster_name.id
+  }
+}
+
 resource "aws_vpc" "main" {
   cidr_block = var.host_network_cidr
+  tags       = local.common_tags
 }
 
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
+  tags   = local.common_tags
 }
 
 resource "aws_subnet" "main" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.host_network_cidr
+  tags       = local.common_tags
 }
 
 resource "aws_route_table" "main" {
@@ -33,6 +45,7 @@ resource "aws_route_table" "main" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
+  tags = local.common_tags
 }
 
 resource "aws_route_table_association" "main" {
@@ -52,6 +65,7 @@ resource "aws_security_group" "egress" {
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = local.common_tags
 }
 
 resource "aws_security_group" "ingress_internal" {
@@ -64,6 +78,7 @@ resource "aws_security_group" "ingress_internal" {
     to_port     = 0
     cidr_blocks = compact([var.host_network_cidr, var.pod_network_cidr_block])
   }
+  tags = local.common_tags
 }
 
 resource "aws_security_group" "ingress_k8s" {
@@ -76,6 +91,7 @@ resource "aws_security_group" "ingress_k8s" {
     to_port     = 6443
     cidr_blocks = var.allowed_k8s_cidr_blocks
   }
+  tags = local.common_tags
 }
 
 resource "aws_security_group" "ingress_ssh" {
@@ -88,6 +104,7 @@ resource "aws_security_group" "ingress_ssh" {
     to_port     = 22
     cidr_blocks = var.allowed_ssh_cidr_blocks
   }
+  tags = local.common_tags
 }
 
 data "local_file" "public_key" {
@@ -98,6 +115,7 @@ data "local_file" "public_key" {
 resource "aws_key_pair" "main" {
   key_name_prefix = "terraform-aws-kubeadm-"
   public_key      = data.local_file.public_key.content
+  tags            = local.common_tags
 }
 
 data "aws_ami" "ubuntu" {
@@ -140,6 +158,7 @@ locals {
 resource "aws_eip" "master" {
   vpc        = true
   depends_on = [aws_internet_gateway.main]
+  tags       = local.common_tags
 }
 
 resource "aws_eip_association" "master" {
@@ -158,9 +177,7 @@ resource "aws_instance" "master" {
     aws_security_group.ingress_k8s.id,
     aws_security_group.ingress_ssh.id
   ]
-  tags = {
-    k8s-node = "master"
-  }
+  tags      = merge(local.common_tags, { k8s-node = "master" })
   user_data = <<EOF
 #!/bin/bash
 ${local.install_kubeadm}
@@ -193,9 +210,7 @@ resource "aws_instance" "workers" {
     aws_security_group.ingress_internal.id,
     aws_security_group.ingress_ssh.id
   ]
-  tags = {
-    k8s-node = "worker-${count.index}"
-  }
+  tags      = merge(local.common_tags, { k8s-node = "worker-${count.index}" })
   user_data = <<-EOF
   #!/bin/bash
   ${local.install_kubeadm}
