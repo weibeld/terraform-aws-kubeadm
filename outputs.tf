@@ -1,7 +1,7 @@
 output "kubeconfig" {
   value = {
-    file = local.kubeconfig_path
-    env  = "export KUBECONFIG=${local.kubeconfig_path}"
+    file = abspath("kubeconfig")
+    env  = "export KUBECONFIG=${abspath("kubeconfig")}"
   }
 }
 

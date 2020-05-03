@@ -4,6 +4,7 @@
 #   [x] In pod_network_cidr variable, replace default value "" with null
 #   [x] Add a cluster_name variable and add this as a tag to all created resources (k8s-cluster=<cluster_name>)
 #   [x] Prefix security group names with var.cluster_name
+#   [ ] Expose kubeconfig file location as a variable (requires checking that the parent directory exists)
 
 terraform {
   required_version = ">= 0.12"
@@ -14,6 +15,10 @@ provider "aws" {
   region = var.region
 }
 
+#------------------------------------------------------------------------------#
+# Common local values
+#------------------------------------------------------------------------------#
+
 resource "random_pet" "cluster_name" {}
 
 locals {
@@ -23,6 +28,10 @@ locals {
     k8s-cluster = local.cluster_name
   }
 }
+
+#------------------------------------------------------------------------------#
+# Network infrastructure
+#------------------------------------------------------------------------------#
 
 resource "aws_vpc" "main" {
   cidr_block = var.host_network_cidr
@@ -54,8 +63,23 @@ resource "aws_route_table_association" "main" {
   subnet_id      = aws_subnet.main.id
 }
 
+#------------------------------------------------------------------------------#
+# Key pair
+#------------------------------------------------------------------------------#
+
+# Performs 'ImportKeyPair' API operation (not 'CreateKeyPair')
+resource "aws_key_pair" "main" {
+  key_name_prefix = "${local.cluster_name}-"
+  public_key      = file(var.public_key_file)
+  tags            = local.common_tags
+}
+
+#------------------------------------------------------------------------------#
+# Security groups
+#------------------------------------------------------------------------------#
+
 # The AWS provider removes the default egress rule from all security groups, so
-# it's necessary to define it explicitly
+# it has to be defined explicitly.
 resource "aws_security_group" "egress" {
   name        = "${local.cluster_name}-egress"
   description = "Allow all outgoing traffic to everywhere"
@@ -108,52 +132,9 @@ resource "aws_security_group" "ingress_ssh" {
   tags = local.common_tags
 }
 
-data "local_file" "public_key" {
-  filename = pathexpand(var.public_key_file)
-}
-
-# Performs 'ImportKeyPair' API operation (not 'CreateKeyPair')
-resource "aws_key_pair" "main" {
-  key_name_prefix = "${local.cluster_name}-"
-  public_key      = data.local_file.public_key.content
-  tags            = local.common_tags
-}
-
-data "aws_ami" "ubuntu" {
-  owners      = ["099720109477"] # AWS account ID of Canonical
-  most_recent = true
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
-  }
-}
-
-# Generate bootstrap token
-# See https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/
-resource "random_string" "token_id" {
-  length  = 6
-  special = false
-  upper   = false
-}
-resource "random_string" "token_secret" {
-  length  = 16
-  special = false
-  upper   = false
-}
-locals {
-  token = "${random_string.token_id.result}.${random_string.token_secret.result}"
-}
-
-locals {
-  install_kubeadm = <<-EOF
-  apt-get update
-  apt-get install -y apt-transport-https curl
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-  apt-get update
-  apt-get install -y docker.io kubeadm
-  EOF
-}
+#------------------------------------------------------------------------------#
+# Elastic IP for master node
+#------------------------------------------------------------------------------#
 
 # EIP for master node because it must know its public IP during initialisation
 resource "aws_eip" "master" {
@@ -165,6 +146,41 @@ resource "aws_eip" "master" {
 resource "aws_eip_association" "master" {
   allocation_id = aws_eip.master.id
   instance_id   = aws_instance.master.id
+}
+
+#------------------------------------------------------------------------------#
+# Bootstrap token for kubeadm
+#------------------------------------------------------------------------------#
+
+# Generate bootstrap token
+# See https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/
+resource "random_string" "token_id" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
+resource "random_string" "token_secret" {
+  length  = 16
+  special = false
+  upper   = false
+}
+
+locals {
+  token = "${random_string.token_id.result}.${random_string.token_secret.result}"
+}
+
+#------------------------------------------------------------------------------#
+# EC2 instances
+#------------------------------------------------------------------------------#
+
+data "aws_ami" "ubuntu" {
+  owners      = ["099720109477"] # AWS account ID of Canonical
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+  }
 }
 
 resource "aws_instance" "master" {
@@ -179,24 +195,35 @@ resource "aws_instance" "master" {
     aws_security_group.ingress_ssh.id
   ]
   tags      = merge(local.common_tags, { k8s-node = "master" })
-  user_data = <<EOF
-#!/bin/bash
-${local.install_kubeadm}
-kubeadm init \
-  --token "${local.token}" \
-  --token-ttl 15m \
-  --apiserver-cert-extra-sans "${aws_eip.master.public_ip}" \
-%{if var.pod_network_cidr_block != null~}
-  --pod-network-cidr "${var.pod_network_cidr_block}" \
-%{endif~}
-  --node-name master
-# Prepare kubeconfig file for download to local machine
-cp /etc/kubernetes/admin.conf /home/ubuntu
-chown ubuntu:ubuntu /home/ubuntu/admin.conf
-kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
-# Indicate completion of bootstrapping on this node
-touch /home/ubuntu/done
-EOF
+  user_data = <<-EOF
+  #!/bin/bash
+
+  # Install kubeadm and Docker
+  apt-get update
+  apt-get install -y apt-transport-https curl
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
+  apt-get update
+  apt-get install -y docker.io kubeadm
+
+  # Run kubeadm
+  kubeadm init \
+    --token "${local.token}" \
+    --token-ttl 15m \
+    --apiserver-cert-extra-sans "${aws_eip.master.public_ip}" \
+  %{if var.pod_network_cidr_block != null~}
+    --pod-network-cidr "${var.pod_network_cidr_block}" \
+  %{endif~}
+    --node-name master
+
+  # Prepare kubeconfig file for download to local machine
+  cp /etc/kubernetes/admin.conf /home/ubuntu
+  chown ubuntu:ubuntu /home/ubuntu/admin.conf
+  kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
+
+  # Indicate completion of bootstrapping on this node
+  touch /home/ubuntu/done
+  EOF
 }
 
 resource "aws_instance" "workers" {
@@ -214,26 +241,34 @@ resource "aws_instance" "workers" {
   tags      = merge(local.common_tags, { k8s-node = "worker-${count.index}" })
   user_data = <<-EOF
   #!/bin/bash
-  ${local.install_kubeadm}
+
+  # Install kubeadm and Docker
+  apt-get update
+  apt-get install -y apt-transport-https curl
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
+  apt-get update
+  apt-get install -y docker.io kubeadm
+
+  # Run kubeadm
   kubeadm join ${aws_instance.master.private_ip}:6443 \
     --token ${local.token} \
     --discovery-token-unsafe-skip-ca-verification \
     --node-name worker-${count.index}
+
   # Indicate completion of bootstrapping on this node
   touch /home/ubuntu/done
   EOF
 }
 
-locals {
-  kubeconfig_path = abspath("kubeconfig")
-}
+#------------------------------------------------------------------------------#
+# Wait for bootstrap to finish on all nodes
+#------------------------------------------------------------------------------#
 
-# Wait for bootstrap on all nodes to finish and download kubeconfig file
-resource "null_resource" "waiting_for_bootstrap_to_finish" {
+resource "null_resource" "wait_for_bootstrap_to_finish" {
   provisioner "local-exec" {
     command = <<-EOF
     alias ssh='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
-    alias scp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
     while true; do
       sleep 2
       ! ssh ubuntu@${aws_eip.master.public_ip} [[ -f /home/ubuntu/done ]] &>/dev/null && continue
@@ -242,10 +277,25 @@ resource "null_resource" "waiting_for_bootstrap_to_finish" {
       %{endfor~}
       break
     done
-    scp ubuntu@${aws_eip.master.public_ip}:admin.conf ${local.kubeconfig_path} &>/dev/null
     EOF
   }
   triggers = {
     instance_ids = join(",", concat([aws_instance.master.id], aws_instance.workers[*].id))
+  }
+}
+
+#------------------------------------------------------------------------------#
+# Download kubeconfig file from master node to local machine
+#------------------------------------------------------------------------------#
+
+resource "null_resource" "download_kubeconfig_file" {
+  provisioner "local-exec" {
+    command = <<-EOF
+    alias scp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
+    scp ubuntu@${aws_eip.master.public_ip}:admin.conf kubeconfig &>/dev/null
+    EOF
+  }
+  triggers = {
+    wait_for_bootstrap_to_finish = null_resource.wait_for_bootstrap_to_finish.id
   }
 }
