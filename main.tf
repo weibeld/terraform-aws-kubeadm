@@ -3,7 +3,7 @@
 #   [x] Add allowed_k8s_cidrs (type list(string)) which defines IP addresses that are allowed to make Kubernetes API requests (TCP/6443) to the master node. Default value ["0.0.0.0/0"] in which case Kubernetes API requests are allowed from everywhere (assign in aws_security_group with cidr_blocks = var.allowed_k8s_cidrs)
 #   [x] In pod_network_cidr variable, replace default value "" with null
 #   [x] Add a cluster_name variable and add this as a tag to all created resources (k8s-cluster=<cluster_name>)
-#   [ ] Prefix security group names with var.cluster_name
+#   [x] Prefix security group names with var.cluster_name
 
 terraform {
   required_version = ">= 0.12"
@@ -17,9 +17,10 @@ provider "aws" {
 resource "random_pet" "cluster_name" {}
 
 locals {
+  cluster_name = var.cluster_name != null ? var.cluster_name : random_pet.cluster_name.id
   common_tags = {
     managed-by  = "terraform-aws-kubeadm"
-    k8s-cluster = var.cluster_name != null ? var.cluster_name : random_pet.cluster_name.id
+    k8s-cluster = local.cluster_name
   }
 }
 
@@ -56,7 +57,7 @@ resource "aws_route_table_association" "main" {
 # The AWS provider removes the default egress rule from all security groups, so
 # it's necessary to define it explicitly
 resource "aws_security_group" "egress" {
-  name        = "egress"
+  name        = "${local.cluster_name}-egress"
   description = "Allow all outgoing traffic to everywhere"
   vpc_id      = aws_vpc.main.id
   egress {
@@ -69,7 +70,7 @@ resource "aws_security_group" "egress" {
 }
 
 resource "aws_security_group" "ingress_internal" {
-  name        = "ingress-internal"
+  name        = "${local.cluster_name}-ingress-internal"
   description = "Allow all incoming traffic from inside the cluster (nodes and pods)."
   vpc_id      = aws_vpc.main.id
   ingress {
@@ -82,7 +83,7 @@ resource "aws_security_group" "ingress_internal" {
 }
 
 resource "aws_security_group" "ingress_k8s" {
-  name        = "ingress-k8s"
+  name        = "${local.cluster_name}-ingress-k8s"
   description = "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
   vpc_id      = aws_vpc.main.id
   ingress {
@@ -95,7 +96,7 @@ resource "aws_security_group" "ingress_k8s" {
 }
 
 resource "aws_security_group" "ingress_ssh" {
-  name        = "ingress-ssh"
+  name        = "${local.cluster_name}-ingress-ssh"
   description = "Allow incoming SSH traffic (TCP/22) from outside the cluster"
   vpc_id      = aws_vpc.main.id
   ingress {
@@ -113,7 +114,7 @@ data "local_file" "public_key" {
 
 # Performs 'ImportKeyPair' API operation (not 'CreateKeyPair')
 resource "aws_key_pair" "main" {
-  key_name_prefix = "terraform-aws-kubeadm-"
+  key_name_prefix = "${local.cluster_name}-"
   public_key      = data.local_file.public_key.content
   tags            = local.common_tags
 }
