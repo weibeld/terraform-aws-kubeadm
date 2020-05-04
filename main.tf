@@ -34,7 +34,7 @@ locals {
 #------------------------------------------------------------------------------#
 
 resource "aws_vpc" "main" {
-  cidr_block = var.host_network_cidr
+  cidr_block = var.vpc_subnet_cidr_block
   tags       = local.common_tags
 }
 
@@ -45,7 +45,7 @@ resource "aws_internet_gateway" "main" {
 
 resource "aws_subnet" "main" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = var.host_network_cidr
+  cidr_block = var.vpc_subnet_cidr_block
   tags       = local.common_tags
 }
 
@@ -101,7 +101,7 @@ resource "aws_security_group" "ingress_internal" {
     protocol    = -1
     from_port   = 0
     to_port     = 0
-    cidr_blocks = compact([var.host_network_cidr, var.pod_network_cidr_block])
+    cidr_blocks = compact([var.vpc_subnet_cidr_block, var.pod_network_cidr_block])
   }
   tags = local.common_tags
 }

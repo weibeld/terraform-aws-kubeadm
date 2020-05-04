@@ -52,9 +52,9 @@ variable "pod_network_cidr_block" {
   default     = null
 }
 
-variable "host_network_cidr" {
+variable "vpc_subnet_cidr_block" {
   type        = string
-  description = "IP address range of the host network (private IP addresses of the cluster nodes)."
+  description = "CIDR block for the VPC subnet that will be created for the cluster (determines the private IP addresses of the cluster nodes)."
   default     = "172.16.0.0/16"
 }
 
