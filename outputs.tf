@@ -1,8 +1,5 @@
 output "kubeconfig" {
-  value = {
-    file = abspath("kubeconfig")
-    env  = "export KUBECONFIG=${abspath("kubeconfig")}"
-  }
+  value = local.kubeconfig_file
 }
 
 output "cluster_name" {

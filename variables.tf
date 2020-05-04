@@ -16,6 +16,18 @@ variable "public_key_file" {
 # Optional variables
 #------------------------------------------------------------------------------#
 
+variable "kubeconfig_dir" {
+  type        = string
+  description = "Directory on the local machine in which to save the kubeconfig file of the created cluster. The kubeconfig file will have a basename of the form \"cluster_name.conf\" where \"cluster_name\" is the name of the cluster as defined by var.cluster_name (or generated randomly if var.cluster_name is not set). The directory may be specified as an absolute or relative path. The directory must exist, otherwise an error occcurs. By default, the current working directory is used."
+  default     = "."
+}
+
+variable "kubeconfig_file" {
+  type        = string
+  description = "Exact filename as which to save the kubeconfig file of the created cluster on the local machine. May be an absolute or relative path. The parent directory of the specified filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, then the value of var.kubeconfig_dir is ignored."
+  default     = null
+}
+
 variable "cluster_name" {
   type        = string
   description = "Name for the Kubernetes cluster. This name will be used for tagging the created AWS resources. If set to null, a random name is automatically generated."

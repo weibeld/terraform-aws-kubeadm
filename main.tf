@@ -4,7 +4,7 @@
 #   [x] In pod_network_cidr variable, replace default value "" with null
 #   [x] Add a cluster_name variable and add this as a tag to all created resources (k8s-cluster=<cluster_name>)
 #   [x] Prefix security group names with var.cluster_name
-#   [ ] Expose kubeconfig file location as a variable (requires checking that the parent directory exists)
+#   [x] Expose kubeconfig file location as a variable (requires checking that the parent directory exists)
 
 terraform {
   required_version = ">= 0.12"
@@ -271,9 +271,9 @@ resource "null_resource" "wait_for_bootstrap_to_finish" {
     alias ssh='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
     while true; do
       sleep 2
-      ! ssh ubuntu@${aws_eip.master.public_ip} [[ -f /home/ubuntu/done ]] &>/dev/null && continue
+      ! ssh ubuntu@${aws_eip.master.public_ip} [[ -f /home/ubuntu/done ]] >/dev/null && continue
       %{for worker_public_ip in aws_instance.workers[*].public_ip~}
-      ! ssh ubuntu@${worker_public_ip} [[ -f /home/ubuntu/done ]] &>/dev/null && continue
+      ! ssh ubuntu@${worker_public_ip} [[ -f /home/ubuntu/done ]] >/dev/null && continue
       %{endfor~}
       break
     done
@@ -288,11 +288,15 @@ resource "null_resource" "wait_for_bootstrap_to_finish" {
 # Download kubeconfig file from master node to local machine
 #------------------------------------------------------------------------------#
 
+locals {
+  kubeconfig_file = var.kubeconfig_file != null ? abspath(pathexpand(var.kubeconfig_file)) : "${abspath(pathexpand(var.kubeconfig_dir))}/${local.cluster_name}.conf"
+}
+
 resource "null_resource" "download_kubeconfig_file" {
   provisioner "local-exec" {
     command = <<-EOF
     alias scp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
-    scp ubuntu@${aws_eip.master.public_ip}:admin.conf kubeconfig &>/dev/null
+    scp ubuntu@${aws_eip.master.public_ip}:/home/ubuntu/admin.conf ${local.kubeconfig_file} >/dev/null
     EOF
   }
   triggers = {
