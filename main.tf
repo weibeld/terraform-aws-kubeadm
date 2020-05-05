@@ -5,6 +5,7 @@
 #   [x] Add a cluster_name variable and add this as a tag to all created resources (k8s-cluster=<cluster_name>)
 #   [x] Prefix security group names with var.cluster_name
 #   [x] Expose kubeconfig file location as a variable (requires checking that the parent directory exists)
+#   [x] Restrict ingress-internal security group to security group rather than var.vpc_subnet_cidr_block
 
 terraform {
   required_version = ">= 0.12"
@@ -78,58 +79,67 @@ resource "aws_key_pair" "main" {
 # Security groups
 #------------------------------------------------------------------------------#
 
-# The AWS provider removes the default egress rule from all security groups, so
-# it has to be defined explicitly.
+# The AWS provider removes the default "allow all "egress rule from all security
+# groups, so it has to be defined explicitly.
 resource "aws_security_group" "egress" {
   name        = "${local.cluster_name}-egress"
   description = "Allow all outgoing traffic to everywhere"
   vpc_id      = aws_vpc.main.id
+  tags        = local.common_tags
   egress {
     protocol    = -1
     from_port   = 0
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = local.common_tags
 }
 
 resource "aws_security_group" "ingress_internal" {
   name        = "${local.cluster_name}-ingress-internal"
-  description = "Allow all incoming traffic from inside the cluster (nodes and pods)."
+  description = "Allow all incoming traffic from nodes and Pods in the cluster"
   vpc_id      = aws_vpc.main.id
+  tags        = local.common_tags
   ingress {
     protocol    = -1
     from_port   = 0
     to_port     = 0
-    cidr_blocks = compact([var.vpc_subnet_cidr_block, var.pod_network_cidr_block])
+    self        = true
+    description = "Allow incoming traffic from cluster nodes"
+
   }
-  tags = local.common_tags
+  ingress {
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = var.pod_network_cidr_block != null ? [var.pod_network_cidr_block] : null
+    description = "Allow incoming traffic from the Pods of the cluster"
+  }
 }
 
 resource "aws_security_group" "ingress_k8s" {
   name        = "${local.cluster_name}-ingress-k8s"
   description = "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
   vpc_id      = aws_vpc.main.id
+  tags        = local.common_tags
   ingress {
     protocol    = "tcp"
     from_port   = 6443
     to_port     = 6443
     cidr_blocks = var.allowed_k8s_cidr_blocks
   }
-  tags = local.common_tags
 }
 
 resource "aws_security_group" "ingress_ssh" {
   name        = "${local.cluster_name}-ingress-ssh"
   description = "Allow incoming SSH traffic (TCP/22) from outside the cluster"
   vpc_id      = aws_vpc.main.id
+  tags        = local.common_tags
   ingress {
     protocol    = "tcp"
     from_port   = 22
     to_port     = 22
     cidr_blocks = var.allowed_ssh_cidr_blocks
   }
-  tags = local.common_tags
 }
 
 #------------------------------------------------------------------------------#
@@ -268,7 +278,7 @@ resource "aws_instance" "workers" {
 resource "null_resource" "wait_for_bootstrap_to_finish" {
   provisioner "local-exec" {
     command = <<-EOF
-    alias ssh='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
+    alias ssh='ssh -q -i ${var.private_key_file} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
     while true; do
       sleep 2
       ! ssh ubuntu@${aws_eip.master.public_ip} [[ -f /home/ubuntu/done ]] >/dev/null && continue
@@ -295,7 +305,7 @@ locals {
 resource "null_resource" "download_kubeconfig_file" {
   provisioner "local-exec" {
     command = <<-EOF
-    alias scp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ${var.private_key_file}'
+    alias scp='scp -q -i ${var.private_key_file} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
     scp ubuntu@${aws_eip.master.public_ip}:/home/ubuntu/admin.conf ${local.kubeconfig_file} >/dev/null
     EOF
   }
