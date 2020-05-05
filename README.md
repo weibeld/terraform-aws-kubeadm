@@ -18,7 +18,7 @@ This is intentional, because it provides you the maximum flexibility to configur
 
 ## Quick usage
 
-First, ensure the [prerequisites](#prerequisites) shown below.
+First, ensure the [prerequisites](#prerequisites) below.
 
 Use the module in your `main.tf` configuration file as follows:
 
