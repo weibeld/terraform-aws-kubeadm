@@ -75,9 +75,3 @@ variable "num_workers" {
   description = "Number of worker nodes."
   default     = 2
 }
-
-variable "region" {
-  type        = string
-  description = "AWS region in which to create the cluster."
-  default     = "eu-central-1"
-}

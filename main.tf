@@ -1,19 +1,5 @@
-# TODO.
-#   [x] Replace localhost_ip variable with allowed_ssh_cidrs (list(string)) which defines the IP addresses that are allowed to make SSH connections to the EC2 instances. Default value ["0.0.0.0/0"], in which case SSH connections are allowed from everyhwere 
-#   [x] Add allowed_k8s_cidrs (type list(string)) which defines IP addresses that are allowed to make Kubernetes API requests (TCP/6443) to the master node. Default value ["0.0.0.0/0"] in which case Kubernetes API requests are allowed from everywhere (assign in aws_security_group with cidr_blocks = var.allowed_k8s_cidrs)
-#   [x] In pod_network_cidr variable, replace default value "" with null
-#   [x] Add a cluster_name variable and add this as a tag to all created resources (k8s-cluster=<cluster_name>)
-#   [x] Prefix security group names with var.cluster_name
-#   [x] Expose kubeconfig file location as a variable (requires checking that the parent directory exists)
-#   [x] Restrict ingress-internal security group to security group rather than var.vpc_subnet_cidr_block
-
 terraform {
   required_version = ">= 0.12"
-}
-
-provider "aws" {
-  # Credentials are read from ~/.aws/credentials
-  region = var.region
 }
 
 #------------------------------------------------------------------------------#
