@@ -24,7 +24,7 @@ variable "kubeconfig_dir" {
 
 variable "kubeconfig_file" {
   type        = string
-  description = "Exact filename as which to save the kubeconfig file of the created cluster on the local machine. May be an absolute or relative path. The parent directory of the specified filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, then the value of var.kubeconfig_dir is ignored."
+  description = "_This is an optional variable._ Exact filename as which to save the kubeconfig file of the created cluster on the local machine. May be an absolute or relative path. The parent directory of the specified filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, then the value of var.kubeconfig_dir is ignored."
   default     = null
 }
 
