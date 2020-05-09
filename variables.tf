@@ -79,3 +79,9 @@ variable "num_workers" {
   description = "Number of worker nodes."
   default     = 2
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "A set of tags to assign to the created resources. These tags will be assigned in addition to the default tags. The default tags include \"kubeadm:cluster\" which is assigned to all resources and whose value is the cluster name, and \"kubeadm:node\" which is assigned to the EC2 instances and whose value is the name of the Kubernetes node that this EC2 constitutes."
+  default     = {}
+}

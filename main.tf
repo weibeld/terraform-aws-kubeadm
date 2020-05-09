@@ -10,10 +10,7 @@ resource "random_pet" "cluster_name" {}
 
 locals {
   cluster_name = var.cluster_name != null ? var.cluster_name : random_pet.cluster_name.id
-  common_tags = {
-    managed-by  = "terraform-aws-kubeadm"
-    k8s-cluster = local.cluster_name
-  }
+  tags         = merge(var.tags, { "kubeadm:cluster" = local.cluster_name })
 }
 
 #------------------------------------------------------------------------------#
@@ -24,7 +21,7 @@ locals {
 resource "aws_key_pair" "main" {
   key_name_prefix = "${local.cluster_name}-"
   public_key      = file(var.public_key_file)
-  tags            = local.common_tags
+  tags            = local.tags
 }
 
 #------------------------------------------------------------------------------#
@@ -37,7 +34,7 @@ resource "aws_security_group" "egress" {
   name        = "${local.cluster_name}-egress"
   description = "Allow all outgoing traffic to everywhere"
   vpc_id      = var.vpc_id
-  tags        = local.common_tags
+  tags        = local.tags
   egress {
     protocol    = -1
     from_port   = 0
@@ -50,7 +47,7 @@ resource "aws_security_group" "ingress_internal" {
   name        = "${local.cluster_name}-ingress-internal"
   description = "Allow all incoming traffic from nodes and Pods in the cluster"
   vpc_id      = var.vpc_id
-  tags        = local.common_tags
+  tags        = local.tags
   ingress {
     protocol    = -1
     from_port   = 0
@@ -72,7 +69,7 @@ resource "aws_security_group" "ingress_k8s" {
   name        = "${local.cluster_name}-ingress-k8s"
   description = "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
   vpc_id      = var.vpc_id
-  tags        = local.common_tags
+  tags        = local.tags
   ingress {
     protocol    = "tcp"
     from_port   = 6443
@@ -85,7 +82,7 @@ resource "aws_security_group" "ingress_ssh" {
   name        = "${local.cluster_name}-ingress-ssh"
   description = "Allow incoming SSH traffic (TCP/22) from outside the cluster"
   vpc_id      = var.vpc_id
-  tags        = local.common_tags
+  tags        = local.tags
   ingress {
     protocol    = "tcp"
     from_port   = 22
@@ -101,7 +98,7 @@ resource "aws_security_group" "ingress_ssh" {
 # EIP for master node because it must know its public IP during initialisation
 resource "aws_eip" "master" {
   vpc  = true
-  tags = local.common_tags
+  tags = local.tags
 }
 
 resource "aws_eip_association" "master" {
@@ -155,7 +152,7 @@ resource "aws_instance" "master" {
     aws_security_group.ingress_k8s.id,
     aws_security_group.ingress_ssh.id
   ]
-  tags      = merge(local.common_tags, { k8s-node = "master" })
+  tags      = merge(local.tags, { "kubeadm:node" = "master" })
   user_data = <<-EOF
   #!/bin/bash
 
@@ -199,7 +196,7 @@ resource "aws_instance" "workers" {
     aws_security_group.ingress_internal.id,
     aws_security_group.ingress_ssh.id
   ]
-  tags      = merge(local.common_tags, { k8s-node = "worker-${count.index}" })
+  tags      = merge(local.tags, { "kubeadm:node" = "worker-${count.index}" })
   user_data = <<-EOF
   #!/bin/bash
 
