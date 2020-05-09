@@ -17,7 +17,7 @@ output "cluster_nodes" {
       public_ip  = i.tags["kubeadm:node"] == "master" ? aws_eip.master.public_ip : i.public_ip
     }
   ]
-  description = "Name, public and private IP addresse, and subnet ID of all nodes of the created cluster."
+  description = "Name, public and private IP address, and subnet ID of all nodes of the created cluster."
 }
 
 output "vpc_id" {

@@ -1,6 +1,6 @@
 output "kubeconfig" {
   value       = module.cluster.kubeconfig
-  description = "Location of the kubeconfig file for the created cluster on the local machine."
+  description = "Absolute path of the kubeconfig file of the created cluster on the local machine."
 }
 
 output "cluster_name" {
@@ -10,5 +10,10 @@ output "cluster_name" {
 
 output "cluster_nodes" {
   value       = module.cluster.cluster_nodes
-  description = "Names and public and private IP addresses of all the nodes of the created cluster."
+  description = "Name, public and private IP address, and subnet ID of all nodes of the created cluster."
+}
+
+output "vpc_id" {
+  value       = module.network.vpc_id
+  description = "ID of the AWS VPC that has been created for the cluster."
 }
