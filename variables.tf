@@ -12,6 +12,16 @@ variable "public_key_file" {
   description = "Public key file (in OpenSSH format) of a key-pair on the local machine (e.g. ~/.ssh/id_rsa.pub)."
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "ID of the AWS VPC in which to create the cluster."
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "ID of the AWS subnet in which to create the cluster. The subnet must be in the VPC specified by var.vpc_id."
+}
+
 #------------------------------------------------------------------------------#
 # Optional variables
 #------------------------------------------------------------------------------#
@@ -50,12 +60,6 @@ variable "pod_network_cidr_block" {
   type        = string
   description = "CIDR block for the Pod network of the cluster. If set to a valid value, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (sets the .spec.podCIDR field of the node objects). If set to null, the cluster is created without an explicitly determined Pod network IP address range, and the nodes receive no Pod subnet IP address range allocations (the .spec.podCIDR field of the nodes is not set)."
   default     = null
-}
-
-variable "vpc_subnet_cidr_block" {
-  type        = string
-  description = "CIDR block for the VPC subnet that will be created for the cluster (determines the private IP addresses of the cluster nodes)."
-  default     = "172.16.0.0/16"
 }
 
 variable "master_instance_type" {

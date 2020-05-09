@@ -1,5 +1,5 @@
 terraform {
-  required_version = "> = 0.12"
+  required_version = ">= 0.12"
 }
 
 #------------------------------------------------------------------------------#
@@ -14,40 +14,6 @@ locals {
     managed-by  = "terraform-aws-kubeadm"
     k8s-cluster = local.cluster_name
   }
-}
-
-#------------------------------------------------------------------------------#
-# Network infrastructure
-#------------------------------------------------------------------------------#
-
-resource "aws_vpc" "main" {
-  cidr_block = var.vpc_subnet_cidr_block
-  tags       = local.common_tags
-}
-
-resource "aws_internet_gateway" "main" {
-  vpc_id = aws_vpc.main.id
-  tags   = local.common_tags
-}
-
-resource "aws_subnet" "main" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.vpc_subnet_cidr_block
-  tags       = local.common_tags
-}
-
-resource "aws_route_table" "main" {
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
-  }
-  tags = local.common_tags
-}
-
-resource "aws_route_table_association" "main" {
-  route_table_id = aws_route_table.main.id
-  subnet_id      = aws_subnet.main.id
 }
 
 #------------------------------------------------------------------------------#
@@ -70,7 +36,7 @@ resource "aws_key_pair" "main" {
 resource "aws_security_group" "egress" {
   name        = "${local.cluster_name}-egress"
   description = "Allow all outgoing traffic to everywhere"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.vpc_id
   tags        = local.common_tags
   egress {
     protocol    = -1
@@ -83,7 +49,7 @@ resource "aws_security_group" "egress" {
 resource "aws_security_group" "ingress_internal" {
   name        = "${local.cluster_name}-ingress-internal"
   description = "Allow all incoming traffic from nodes and Pods in the cluster"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.vpc_id
   tags        = local.common_tags
   ingress {
     protocol    = -1
@@ -105,7 +71,7 @@ resource "aws_security_group" "ingress_internal" {
 resource "aws_security_group" "ingress_k8s" {
   name        = "${local.cluster_name}-ingress-k8s"
   description = "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.vpc_id
   tags        = local.common_tags
   ingress {
     protocol    = "tcp"
@@ -118,7 +84,7 @@ resource "aws_security_group" "ingress_k8s" {
 resource "aws_security_group" "ingress_ssh" {
   name        = "${local.cluster_name}-ingress-ssh"
   description = "Allow incoming SSH traffic (TCP/22) from outside the cluster"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.vpc_id
   tags        = local.common_tags
   ingress {
     protocol    = "tcp"
@@ -134,9 +100,8 @@ resource "aws_security_group" "ingress_ssh" {
 
 # EIP for master node because it must know its public IP during initialisation
 resource "aws_eip" "master" {
-  vpc        = true
-  depends_on = [aws_internet_gateway.main]
-  tags       = local.common_tags
+  vpc  = true
+  tags = local.common_tags
 }
 
 resource "aws_eip_association" "master" {
@@ -182,7 +147,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "master" {
   ami           = data.aws_ami.ubuntu.image_id
   instance_type = var.master_instance_type
-  subnet_id     = aws_subnet.main.id
+  subnet_id     = var.subnet_id
   key_name      = aws_key_pair.main.key_name
   vpc_security_group_ids = [
     aws_security_group.egress.id,
@@ -226,7 +191,7 @@ resource "aws_instance" "workers" {
   count                       = var.num_workers
   ami                         = data.aws_ami.ubuntu.image_id
   instance_type               = var.worker_instance_type
-  subnet_id                   = aws_subnet.main.id
+  subnet_id                   = var.subnet_id
   associate_public_ip_address = true
   key_name                    = aws_key_pair.main.key_name
   vpc_security_group_ids = [
