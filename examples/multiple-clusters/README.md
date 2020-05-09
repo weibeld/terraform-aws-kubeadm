@@ -10,3 +10,4 @@ The [`main.tf`](main.tf)
 
 
 [prerequisites](https://github.com/weibeld/terraform-aws-kubeadm#prerequisites)
+[prerequisites](../../README.md#prerequisites)
