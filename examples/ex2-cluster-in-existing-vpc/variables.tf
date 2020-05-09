@@ -11,11 +11,12 @@ variable "public_key_file" {
 variable "vpc_id" {
   type        = string
   description = "ID of an existing AWS VPC in which to create the cluster."
+  default     = null
 }
 
 variable "subnet_id" {
   type        = string
-  description = "ID of an existing AWS subnet in which to create the cluster. The subnet must be in the VPC defined in var.vpc_id."
+  description = "ID of an existing AWS subnet in which to create the cluster. The subnet must be in the VPC defined by var.vpc_id, otherwise an error occurs."
 }
 
 variable "region" {
