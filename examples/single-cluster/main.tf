@@ -4,6 +4,8 @@ provider "aws" {
   region = var.region
 }
 
+# TODO: hardcode all variables of the module directly in this file (except
+# private_key_file and public_key_file which are exposed to the user).
 module "cluster" {
   source  = "weibeld/kubeadm/aws"
   version = "0.0.2"
