@@ -12,19 +12,21 @@ variable "public_key_file" {
   description = "Public key file (in OpenSSH format) of a key-pair on the local machine (e.g. ~/.ssh/id_rsa.pub)."
 }
 
+#------------------------------------------------------------------------------#
+# Optional variables
+#------------------------------------------------------------------------------#
+
 variable "vpc_id" {
   type        = string
-  description = "ID of the AWS VPC in which to create the cluster."
+  description = "ID of the AWS VPC in which to create the cluster. If set to null, the default VPC is used."
+  default     = null
 }
 
 variable "subnet_id" {
   type        = string
-  description = "ID of the AWS subnet in which to create the cluster. The subnet must be in the VPC specified by var.vpc_id."
+  description = "ID of the AWS subnet in which to create the cluster. The subnet must be in the VPC specified by var.vpc_id. If set to null, one of the default subnets in the default VPC is used."
+  default     = null
 }
-
-#------------------------------------------------------------------------------#
-# Optional variables
-#------------------------------------------------------------------------------#
 
 variable "kubeconfig_dir" {
   type        = string
