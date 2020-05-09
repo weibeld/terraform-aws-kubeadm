@@ -1,4 +1,5 @@
 .terraform*
 terraform.tfstate*
 terraform.tfvars
+!examples/**/terraform.tfvars
 *.conf
