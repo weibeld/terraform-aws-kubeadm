@@ -38,7 +38,7 @@ provider "aws" {
 
 module "cluster" {
   source           = "weibeld/kubeadm/aws"
-  version          = "~> 0.0"
+  version          = "~> 0.1"
   private_key_file = "~/.ssh/id_rsa"
   public_key_file  = "~/.ssh/id_rsa.pub"
 }

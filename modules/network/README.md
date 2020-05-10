@@ -17,7 +17,7 @@ provider "aws" {
 
 module "network" {
   source     = "weibeld/kubeadm/aws//modules/network"
-  version    = "~> 0.0"
+  version    = "~> 0.1"
 }
 ```
 
