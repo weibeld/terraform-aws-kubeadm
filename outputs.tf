@@ -1,11 +1,11 @@
 output "kubeconfig" {
   value       = local.kubeconfig_file
-  description = "Absolute path of the kubeconfig file of the created cluster on the local machine."
+  description = "Location of the kubeconfig file for the created cluster on the local machine."
 }
 
 output "cluster_name" {
   value       = local.cluster_name
-  description = "Name of the created cluster. This name is used as the value of the \"kubeadm:cluster\" tag assigned to all created resources."
+  description = "Name of the created cluster. This name is used as the value of the \"kubeadm:cluster\" tag assigned to all created AWS resources."
 }
 
 output "cluster_nodes" {
@@ -22,5 +22,5 @@ output "cluster_nodes" {
 
 output "vpc_id" {
   value       = aws_security_group.egress.vpc_id
-  description = "ID of the AWS VPC in which the cluster has been created."
+  description = "ID of the VPC in which the cluster has been created."
 }

@@ -6,25 +6,30 @@ Terraform module for bootstrapping a Kubernetes cluster with kubeadm on AWS.
 
 This module allows to create AWS infrastructure and bootstrap a Kubernetes cluster on it with a single command.
 
-The result of running the module is a freshly bootstrapped Kubernetes cluster like you get it after manually running `kubeadm init` and `kubeadm join`.
+The result of running the module is a freshly bootstrapped Kubernetes cluster — like what you get after manually running `kubeadm init` and `kubeadm join`.
 
-> The cluster will have no CNI plugin installed like it's the case when manually bootstrapping a cluster with kubeadm.
+The module also creates a kubeconfig file on your local machine so that you can access the cluster right away.
 
-The module also adds a kubeconfig file on your local machine so that you can access the cluster right away.
+The number and types of nodes, the Pod network CIDR block, and many other parameters are configurable.
 
-The number and type of nodes, the Pod network CIDR block, and many other parameters are configurable.
+Notes:
 
-> For now, the cluster is limited to a single master node.
+- The module does not install any CNI plugin in the cluster, which reflects the behaviour of kubeadm
+- For now, the created clusters are limited to a single master node
 
-The intended use of the module is for experiments. The module allows you to quickly create a bare-bones cluster that you can then continue working on.
+## Intended use
 
-An example use case is testing CNI plugins which is made possible by the fact that the cluster won't have any CNI plugin installed by default.
+The module is intended to be used for experiments. It automates the process of bootstrapping a cluster, which allows you to create a series of clusters quickly and then run experiments on them.
 
-## Quick usage
+The module does on purpose not produce production-ready cluster, for example, by installing a CNI plugin, because this might interfer with experiments that you want to run on the bootstrapped clusters.
+
+In other words, since the module does not intall a CNI plugin by default, you can use this module to test arbitrary configurations of CNI plugins on a freshly bootstrapped cluster.
+
+## Quick start
 
 First, ensure the [prerequisites](#prerequisites) below.
 
-A minimal example usage of the module in your Terraform configuration looks as follows:
+A minimal usage of the module looks as follows:
 
 ```hcl
 provider "aws" {
@@ -39,35 +44,35 @@ module "cluster" {
 }
 ```
 
-This creates a Kubernetes cluster with 1 master node and 2 worker nodes in your default VPC in the `eu-central-1` region.
+This results in the creation of a Kubernetes cluster with one master node and two worker nodes in the default VPC of the `eu-central-1` region.
 
-The only required variables of the module are `privat_key_file` and `public_key_file` which specify a local key pair that will allow you to SSH into the nodes of the cluster.
+The only required variables of the module are `privat_key_file` and `public_key_file` which must specify a key pair on your local machine that will allow you to SSH into the nodes of the cluster.
 
-The cluster is given a random name (such as `relaxed-ocelot`) and when the `terraform apply` command completes, you will have a kubeconfig file named after the cluster (such as `relaxed-ocelot.conf`) in your current working directory.
+The cluster is given a random name (such as `relaxed-ocelot`) and the module creates a kubeconfig file on your local machine that is named after the cluster it belongs to (such as `relaxed-ocelot.conf`). By default, this kubeconfig file is created in your current working directory.
 
-You can use this kubeconfig file to access the newly created cluster:
+You can use this kubeconfig file to access the cluster. For example:
 
 ```bash
 kubectl --kubeconfig relaxed-ocelot.conf get nodes -o wide
 ```
 
-> If you execute the above command, you will see that all nodes are `NotReady`. This is because your cluster does not yet have a CNI plugin installed and is the expected behaviour.
+> Note that if you execute the above command, you will see that all nodes are `NotReady`. This is the expected behaviour because the cluster does not yet have a CNI plugin installed.
 
-You may also set the [`KUBECONFIG`](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable) environment variable so that you don't need to set the `--kubeconfig` flag for every command:
+You may also set the [`KUBECONFIG`](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/#set-the-kubeconfig-environment-variable) environment variable so that you don't need to set the `--kubeconfig` flag for every kubectl command:
 
 ```bash
 export KUBECONFIG=$(pwd)/relaxed-ocelot.conf
 ```
 
-You can SSH into any node of your cluster as follows:
+You can SSH into the nodes of your cluster as follows:
 
 ```bash
 ssh -i ~/.ssh/id_rsa ubuntu@3.121.110.233
 ```
 
-In the above example, `~/.ssh/id_rsa` is the private key that you specified to the `private_key_file` variable of the module, and `3.121.110.233` is the public IP address of the EC2 instance corresponding to the desired node.
+In the above example, `~/.ssh/id_rsa` is the private key that you specified to the `private_key_file` variable of the module, and `3.121.110.233` is the public IP address of the EC2 instance that corresponds to the desired cluster node.
 
-For more details about the created AWS resources, see [AWS resources](#aws-resources) below. For more advanced usage examples, see the [examples](examples) directory.
+For more details about the created AWS resources, see [AWS resources](#aws-resources) below. For more advanced usage examples, see the [examples](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples).
 
 ## Prerequisites
 
@@ -85,11 +90,14 @@ Terraform needs to have access to the **AWS Access Key ID** and **AWS Secret Acc
 
 You can enable this in one of the two following ways:
 
-1. Create an [`~/.aws/credentials`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where) file. This is automatically done for you if you configure the [AWS CLI](https://aws.amazon.com/cli/):
+-  Create an [`~/.aws/credentials`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where) file. This is automatically done for you if you configure the [AWS CLI](https://aws.amazon.com/cli/):
+
     ```bash
     aws configure
     ```
-2. Set the [`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) environment variables to your Access Key ID and Secret Access Key:
+
+- Set the [`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) environment variables to your Access Key ID and Secret Access Key:
+
     ```bash
     export AWS_ACCESS_KEY_ID=<AccessKeyID>
     export AWS_SECRET_ACCESS_KEY=<SecretAccessKey>
