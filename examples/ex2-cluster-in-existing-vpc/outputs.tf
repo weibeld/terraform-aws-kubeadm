@@ -1,6 +1,6 @@
 output "kubeconfig" {
   value       = module.cluster.kubeconfig
-  description = "Absolute path of the kubeconfig file of the created cluster on the local machine."
+  description = "Location of the kubeconfig file for the created cluster on the local machine."
 }
 
 output "cluster_name" {
