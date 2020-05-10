@@ -18,31 +18,31 @@ variable "public_key_file" {
 
 variable "vpc_id" {
   type        = string
-  description = "ID of the AWS VPC in which to create the cluster. If set to null, the default VPC is used."
+  description = "**This is an optional variable with a default value of null**. ID of the AWS VPC in which to create the cluster. If null, the default VPC is used."
   default     = null
 }
 
 variable "subnet_id" {
   type        = string
-  description = "ID of the AWS subnet in which to create the cluster. The subnet must be in the VPC specified by var.vpc_id. If set to null, one of the default subnets in the default VPC is used."
+  description = "**This is an optional variable with a default value of null**. ID of the AWS subnet in which to create the cluster. . If null, one of the default subnets in the default VPC is used. The subnet must be in the VPC specified by var.vpc_id, otherwise an error occurs."
   default     = null
 }
 
 variable "kubeconfig_dir" {
   type        = string
-  description = "Directory on the local machine in which to save the kubeconfig file of the created cluster. The kubeconfig file will have a basename of the form \"cluster_name.conf\" where \"cluster_name\" is the name of the cluster as defined by var.cluster_name (or generated randomly if var.cluster_name is not set). The directory may be specified as an absolute or relative path. The directory must exist, otherwise an error occcurs. By default, the current working directory is used."
+  description = "Directory on the local machine in which to save the kubeconfig file of the created cluster. The kubeconfig file will have a basename of the form \"<cluster_name>.conf\" where \"<cluster_name>\" is the name of the cluster as defined by var.cluster_name (or generated randomly if var.cluster_name is null). The directory may be specified as an absolute or relative path. The directory must exist, otherwise an error occurs. By default, the current working directory is used."
   default     = "."
 }
 
 variable "kubeconfig_file" {
   type        = string
-  description = "_This is an optional variable._ Exact filename as which to save the kubeconfig file of the created cluster on the local machine. May be an absolute or relative path. The parent directory of the specified filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, then the value of var.kubeconfig_dir is ignored."
+  description = "**This is an optional variable with a default value of null**. Filename for the kubeconfig file of the created cluster. The kubeconfig file will be saved on the local machine with the given name. The filename may be specified as an absolute or relative path. The parent directory of the base file must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is non-null, then the value of var.kubeconfig_dir is ignored."
   default     = null
 }
 
 variable "cluster_name" {
   type        = string
-  description = "Name for the Kubernetes cluster. This name will be used for tagging the created AWS resources. If set to null, a random name is automatically generated."
+  description = "**This is an optional variable with a default value of null**. Name for the Kubernetes cluster. This name will be used as the value for the default \"kubeadm:cluster\" tag that is assigned to all created AWS resources. If null, a random name is automatically selected."
   default     = null
 }
 
@@ -60,7 +60,7 @@ variable "allowed_k8s_cidr_blocks" {
 
 variable "pod_network_cidr_block" {
   type        = string
-  description = "CIDR block for the Pod network of the cluster. If set to a valid value, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (sets the .spec.podCIDR field of the node objects). If set to null, the cluster is created without an explicitly determined Pod network IP address range, and the nodes receive no Pod subnet IP address range allocations (the .spec.podCIDR field of the nodes is not set)."
+  description = "**This is an optional variable with a default value of null**. CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (i.e. sets the .spec.podCIDR field of the node objects). If null, the cluster is created without an explicitly determined Pod network IP address range, and the nodes are not allocated any Pod subnet IP address ranges (i.e. the .spec.podCIDR field of the nodes is not set)."
   default     = null
 }
 
