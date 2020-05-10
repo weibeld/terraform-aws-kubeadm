@@ -8,9 +8,9 @@ This module allows to create AWS infrastructure and bootstrap a Kubernetes clust
 
 The result of running the module is a freshly bootstrapped Kubernetes cluster like you get it after manually running `kubeadm init` and `kubeadm join`.
 
-> The cluster will have no CNI plugin installed just as it's the case when manually bootstrapping a cluster with kubeadm.
+> The cluster will have no CNI plugin installed like it's the case when manually bootstrapping a cluster with kubeadm.
 
-The module also creates a kubeconfig file on your local machine so that you can access the cluster right away.
+The module also adds a kubeconfig file on your local machine so that you can access the cluster right away.
 
 The number and type of nodes, the Pod network CIDR block, and many other parameters are configurable.
 
@@ -81,7 +81,7 @@ The [Terraform documentation](https://www.terraform.io/downloads.html) includes 
 
 ### 2. AWS credentials are configured
 
-Terraform needs to have access to the **AWS Access Key ID** and **AWS Secret Access Key** of your AWS account in order to create resources.
+Terraform needs to have access to the **AWS Access Key ID** and **AWS Secret Access Key** of your AWS account in order to create AWS resources.
 
 You can enable this in one of the two following ways:
 
@@ -89,7 +89,7 @@ You can enable this in one of the two following ways:
     ```bash
     aws configure
     ```
-2. Directly the [`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) environment variables to your Access Key ID and Secret Access Key:
+2. Set the [`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) environment variables to your Access Key ID and Secret Access Key:
     ```bash
     export AWS_ACCESS_KEY_ID=<AccessKeyID>
     export AWS_SECRET_ACCESS_KEY=<SecretAccessKey>
@@ -97,9 +97,9 @@ You can enable this in one of the two following ways:
 
 ### 3. You have a key pair on your local machine
 
-The module requires you to specify a key pair on your local machine that will allow you to SSH into the nodes of the cluster.
+The module requires you to specify a key pair which will allow you to SSH into the nodes of the cluster.
 
-You can use any local key pair for this, for example, the default `~/.ssh/id_rsa` (private key) and `~/.ssh/id_rsa.pub` (public key).
+You can use any key pair on your local machine for this, for example, the default `~/.ssh/id_rsa` (private key) and `~/.ssh/id_rsa.pub` (public key).
 
 You can also create a new key pair with:
 
@@ -131,9 +131,7 @@ With the default settings (1 master node and 2 worker nodes), the module creates
 [eni]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html
 [key]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html
 
-Note that each node results in the creation of 3 AWS resources: 1 EC2 instance, 1 Volume, and 1 Network Interface. Consequently, you can add or subtract 3 from the total number of created AWS resources for each added or removed worker node.
-
-For example:
+Note that each node results in the creation of 3 AWS resources: 1 EC2 instance, 1 Volume, and 1 Network Interface. Consequently, you can add or subtract 3 from the total number of created AWS resources for each added or removed worker node. For example:
 
 - 1 worker node: total 12 AWS resources
 - 2 worker nodes: total 15 AWS resources
@@ -142,6 +140,8 @@ For example:
 You can list all resources that you have in a given region with the [Tag Editor](https://console.aws.amazon.com/resource-groups/tag-editor) in the AWS Console.
 
 > Note that [Key Pairs][key] are not listed in the Tag Editor.
+
+### Tags
 
 The module assigns a tag with a key of `kubeadm:cluster` and a value corresponding to the cluster name to all explicitly created resources. For example, if the cluster name is `relaxed-ocelot`, all of the above explicitly created resources will have the following tag:
 
@@ -153,10 +153,22 @@ This allows you to easily identify the resources that belong to a given cluster.
 
 > Note that the implicitly created sub-resources (such as the Volumes and Network Interfaces of the EC2 Instances) won't have the `kubeadm:cluster` tag assigned.
 
+Additionally, the EC2 instances will get a tag with a key of `kubeadm:node` and a value corresponding to the node name. For the master node, this will be:
+
+```
+kubeadm:node=master
+```
+
+And for the worker nodes:
+
+```
+kubeadm:node=worker-X
+```
+
 ## Network submodule
 
 By default, the kubeadm module creates the cluster in the [default VPC](https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html) of the specified AWS region.
 
-This repository also contains a [network submodule](modules/network), which allows to create a dedicated VPC in which to run one or multiple Kubernetes clusters.
+The [network submodule](modules/network) allows you to create a new VPC infrastructure in which you can then create one or multiple Kubernetes clusters with the kubeadm module.
 
-For using the network submodule together with the kubeadm module, see the [examples](#examples/ex3-cluster-in-dedicated-vpc).
+See the [examples](examples/ex3-cluster-in-dedicated-vpc) for using the kubeadm module together with the network submodule.

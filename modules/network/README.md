@@ -27,7 +27,7 @@ This creates a new VPC infrastructure in the `eu-central-1` region.
 
 The ID of the created VPC and subnet can then be passed to the corresponding input variables of the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module, which causes the Kubernetes cluster to be created in the given VPC.
 
-For a more detailed usage example, see the [examples](#examples/ex3-cluster-in-dedicated-vpc).
+For a more detailed usage example, see the [examples](examples/ex3-cluster-in-dedicated-vpc).
 
 ### AWS resources
 
