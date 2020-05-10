@@ -7,8 +7,7 @@ module "cluster_1" {
   version          = "~> 0.0"
   private_key_file = var.private_key_file
   public_key_file  = var.public_key_file
-  cluster_name     = var.cluster_1_name
-  kubeconfig_file  = "${var.cluster_1_name}.conf"
+  cluster_name     = var.cluster_names[0]
 }
 
 module "cluster_2" {
@@ -16,8 +15,7 @@ module "cluster_2" {
   version          = "~> 0.0"
   private_key_file = var.private_key_file
   public_key_file  = var.public_key_file
-  cluster_name     = var.cluster_2_name
-  kubeconfig_file  = "${var.cluster_2_name}.conf"
+  cluster_name     = var.cluster_names[1]
 }
 
 module "cluster_3" {
@@ -25,6 +23,5 @@ module "cluster_3" {
   version          = "~> 0.0"
   private_key_file = var.private_key_file
   public_key_file  = var.public_key_file
-  cluster_name     = var.cluster_3_name
-  kubeconfig_file  = "${var.cluster_3_name}.conf"
+  cluster_name     = var.cluster_names[2]
 }

@@ -16,22 +16,10 @@ variable "public_key_file" {
 # Optional variables
 #------------------------------------------------------------------------------#
 
-variable "cluster_1_name" {
-  type        = string
-  description = "Name of the first cluster."
-  default     = "cluster-1"
-}
-
-variable "cluster_2_name" {
-  type        = string
-  description = "Name of the second cluster."
-  default     = "cluster-2"
-}
-
-variable "cluster_3_name" {
-  type        = string
-  description = "Name of the third cluster."
-  default     = "cluster-3"
+variable "cluster_names" {
+  type        = tuple([string, string, string])
+  description = "Names for the individual clusters. If the value for a specific cluster is null, a random name will be automatically chosen."
+  default     = [null, null, null]
 }
 
 variable "region" {
