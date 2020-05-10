@@ -1,14 +1,14 @@
 # AWS network module
 
-Terraform module for creating VPC infrastructure that can be used with the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module.
+Terraform module for creating a VPC that can be used with the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module.
 
 ## Description
 
-This module creates a VPC with a single subnet and Internet access which can be used to host one or multiple Kubernetes clusters created with the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module.
+This module creates a VPC with a single subnet. This VPC and subnet can then be used by the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module as a dedicated network infrastructure for the created Kubernetes clusters.
 
-## Quick usage
+## Quick start
 
-A minimal usage of the module is as follows:
+A minimal usage of the module looks as follows:
 
 ```hcl
 provider "aws" {
@@ -21,13 +21,11 @@ module "network" {
 }
 ```
 
-This creates a new VPC infrastructure in the `eu-central-1` region.
+This creates a new VPC and subnet in the `eu-central-1` region.
 
-> For the detailed set o created AWS resources, see [AWS resources](#aws-resources) below.
+The ID of the created VPC and subnet can then be passed to the `vpc_id` and `subnet_id` variables of the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module, which causes the Kubernetes cluster to be created in the given VPC and subnet.
 
-The ID of the created VPC and subnet can then be passed to the corresponding input variables of the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module, which causes the Kubernetes cluster to be created in the given VPC.
-
-For a more detailed usage example, see the [examples](examples/ex3-cluster-in-dedicated-vpc).
+For a more detailed usage example, see the [_cluster in dedicated VPC_](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples/ex3-cluster-in-dedicated-vpc).
 
 ### AWS resources
 

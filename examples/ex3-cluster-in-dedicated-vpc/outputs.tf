@@ -10,10 +10,10 @@ output "cluster_name" {
 
 output "cluster_nodes" {
   value       = module.cluster.cluster_nodes
-  description = "Name, public and private IP address, and subnet ID of all nodes of the created cluster."
+  description = "Name, public and private IP address, and subnet ID of the nodes of the created cluster."
 }
 
 output "vpc_id" {
   value       = module.network.vpc_id
-  description = "ID of the AWS VPC that has been created for the cluster."
+  description = "ID of the VPC in which the cluster is running."
 }

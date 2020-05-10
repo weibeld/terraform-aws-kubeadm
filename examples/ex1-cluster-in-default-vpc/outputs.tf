@@ -15,5 +15,5 @@ output "cluster_nodes" {
 
 output "vpc_id" {
   value       = module.cluster.vpc_id
-  description = "ID of the AWS VPC in which the cluster has been created."
+  description = "ID of the VPC in which the cluster has been created."
 }

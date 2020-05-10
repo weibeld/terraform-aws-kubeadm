@@ -4,10 +4,9 @@ This example shows how to create a cluster in the default VPC of a given AWS reg
 
 ## Description
 
-The Terraform configuration for this example consists of the following files:
+This example invokes the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module with only the required variables.
 
-
-The `main.tf` file invokes the [kubeadm module](https://registry.terraform.io/modules/weibeld/kubeadm/aws) with only the required variables, which causes a cluster with default settings being created in the default VPC.
+This results in a cluster with default parameters being created in the default VPC and subnet of the configured AWS region.
 
 ## Files
 

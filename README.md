@@ -21,9 +21,9 @@ Notes:
 
 The module is intended to be used for experiments. It automates the process of bootstrapping a cluster, which allows you to create a series of clusters quickly and then run experiments on them.
 
-The module does on purpose not produce production-ready cluster, for example, by installing a CNI plugin, because this might interfer with experiments that you want to run on the bootstrapped clusters.
+The module does on purpose not produce production-ready cluster, for example, by installing a CNI plugin, because this might interfere with experiments that you want to run on the bootstrapped clusters.
 
-In other words, since the module does not intall a CNI plugin by default, you can use this module to test arbitrary configurations of CNI plugins on a freshly bootstrapped cluster.
+In other words, since the module does not install a CNI plugin by default, you can use this module to test arbitrary configurations of CNI plugins on a freshly bootstrapped cluster.
 
 ## Quick start
 
@@ -103,7 +103,7 @@ You can enable this in one of the two following ways:
     export AWS_SECRET_ACCESS_KEY=<SecretAccessKey>
     ```
 
-### 3. You have a key pair on your local machine
+### 3. Key pair on your local machine
 
 The module requires you to specify a key pair which will allow you to SSH into the nodes of the cluster.
 
@@ -161,7 +161,7 @@ This allows you to easily identify the resources that belong to a given cluster.
 
 > Note that the implicitly created sub-resources (such as the Volumes and Network Interfaces of the EC2 Instances) won't have the `kubeadm:cluster` tag assigned.
 
-Additionally, the EC2 instances will get a tag with a key of `kubeadm:node` and a value corresponding to the node name. For the master node, this will be:
+Additionally, the EC2 instances will get a tag with a key of `kubeadm:node` and a value corresponding to the Kubernetes node name. For the master node, this is:
 
 ```
 kubeadm:node=master
@@ -173,10 +173,12 @@ And for the worker nodes:
 kubeadm:node=worker-X
 ```
 
+Where `X` is an index starting at 0.
+
 ## Network submodule
 
 By default, the kubeadm module creates the cluster in the [default VPC](https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html) of the specified AWS region.
 
-The [network submodule](modules/network) allows you to create a new VPC infrastructure in which you can then create one or multiple Kubernetes clusters with the kubeadm module.
+The [network submodule](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/modules/network) allows you to create a dedicated VPC for your cluster.
 
-See the [examples](examples/ex3-cluster-in-dedicated-vpc) for using the kubeadm module together with the network submodule.
+See the [_cluster in dedicated VPC_](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples/ex3-cluster-in-dedicated-vpc) example for how to use the network submodule together with the kubeadm module.
