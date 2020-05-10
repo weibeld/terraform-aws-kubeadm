@@ -25,7 +25,7 @@ This creates a new VPC and subnet in the `eu-central-1` region.
 
 The ID of the created VPC and subnet can then be passed to the `vpc_id` and `subnet_id` variables of the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module, which causes the Kubernetes cluster to be created in the given VPC and subnet.
 
-For a more detailed usage example, see the [_cluster in dedicated VPC_](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples/ex3-cluster-in-dedicated-vpc).
+For how to use the network submodule together with the kubeadm module, see the [_cluster in dedicated VPC_](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples/ex3-cluster-in-dedicated-vpc) example.
 
 ### AWS resources
 
@@ -47,4 +47,4 @@ The module creates the following AWS resources:
 [subnet]: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
 [igw]: https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html
 
-You can list all resources that you have in a given region with the [Tag Editor](https://console.aws.amazon.com/resource-groups/tag-editor) in the AWS Console.
+You can list all AWS resources in a given region with the [Tag Editor](https://console.aws.amazon.com/resource-groups/tag-editor) in the AWS Console.

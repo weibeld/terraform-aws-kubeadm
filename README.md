@@ -145,7 +145,7 @@ Note that each node results in the creation of 3 AWS resources: 1 EC2 instance, 
 - 2 worker nodes: total 15 AWS resources
 - 3 worker nodes: total 18 AWS resources
 
-You can list all resources that you have in a given region with the [Tag Editor](https://console.aws.amazon.com/resource-groups/tag-editor) in the AWS Console.
+You can list all AWS resources in a given region with the [Tag Editor](https://console.aws.amazon.com/resource-groups/tag-editor) in the AWS Console.
 
 > Note that [Key Pairs][key] are not listed in the Tag Editor.
 
