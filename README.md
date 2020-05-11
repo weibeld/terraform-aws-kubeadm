@@ -2,6 +2,15 @@
 
 Terraform module for bootstrapping a Kubernetes cluster with kubeadm on AWS.
 
+## Contents
+
+- [**Description**](#description)
+- [**Intended usage**](#intended-usage)
+- [**Quick start**](#quick-start)
+- [**Prerequisites**](#prerequisites)
+- [**AWS resources**](#aws-resources)
+- [**Network submodule**](#network-submodule)
+
 ## Description
 
 This module allows to create AWS infrastructure and bootstrap a Kubernetes cluster on it with a single command.
@@ -17,7 +26,7 @@ Notes:
 - The module does not install any CNI plugin in the cluster, which reflects the behaviour of kubeadm
 - For now, the created clusters are limited to a single master node
 
-## Intended use
+## Intended usage
 
 The module is intended to be used for experiments. It automates the process of bootstrapping a cluster, which allows you to create a series of clusters quickly and then run experiments on them.
 
