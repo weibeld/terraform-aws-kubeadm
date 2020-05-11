@@ -2,6 +2,12 @@
 
 Terraform module for creating a VPC that can be used with the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module.
 
+## Contents
+
+- [**Description**](#description)
+- [**Quick start**](#quick-start)
+- [**AWS resources**](#aws-resources)
+
 ## Description
 
 This module creates a VPC with a single subnet. This VPC and subnet can then be used by the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module as a dedicated network infrastructure for the created Kubernetes clusters.
@@ -27,7 +33,7 @@ The ID of the created VPC and subnet can then be passed to the `vpc_id` and `sub
 
 For how to use the network submodule together with the kubeadm module, see the [_cluster in dedicated VPC_](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples/ex3-cluster-in-dedicated-vpc) example.
 
-### AWS resources
+## AWS resources
 
 The module creates the following AWS resources:
 
