@@ -8,12 +8,12 @@ This example invokes both the [kubeadm module](https://github.com/weibeld/terraf
 
 The network submodule creates a VPC and subnet and outputs the AWS resource IDs of this VPC and subnet.
 
-The configuration then invokes the kubeadm module by passing the VPC and subnet ID from the network submodule output to the following input variables of the kubeadm module:
+The example then invokes the kubeadm module by passing the VPC and subnet ID from the network submodule output to the following input variables of the kubeadm module:
 
 - `vpc_id`
 - `subnet_id`
 
-This causes the kubeadm module to create the cluster in the VPC and subnet created by the network submodule.
+This causes the kubeadm module to create the cluster in the VPC and subnet that have just been created by the network submodule.
 
 ## Files
 

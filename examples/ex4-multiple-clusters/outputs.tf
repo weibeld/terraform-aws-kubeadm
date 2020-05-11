@@ -31,5 +31,5 @@ output "kubeconfigs" {
     ] :
     (c.cluster_name) => c.kubeconfig
   }
-  description = "Locations of the kubeconfig files of the created clusters on the local machine."
+  description = "Locations of the kubeconfig files of the created clusters."
 }

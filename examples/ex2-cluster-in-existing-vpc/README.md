@@ -1,15 +1,15 @@
 # Example: cluster in existing VPC
 
-This example shows how to create a Kubernetes cluster in an existing VPC.
+This example shows how to create a cluster in an existing VPC.
 
 ## Description
 
-This example invokes the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module with the following optional variables:
+The example invokes the [kubeadm](https://github.com/weibeld/terraform-aws-kubeadm) module with the following optional variables:
 
 - `vpc_id`
 - `subnet_id`
 
-The values for these variables must be the AWS resource IDs of an existing VPC and subnet, respectively. This causes the kubeadm module to create the resources for the cluster in the provided VPC and subnet.
+The values for these variables must be the IDs of an existing VPC and subnet, respectively. This causes the kubeadm module to create the cluster in the provided VPC and subnet.
 
 The provided VPC and subnet may already contain other resources. The VPC also may contain additional subnets, but the cluster will be created exclusively in the provided subnet.
 
@@ -20,15 +20,15 @@ The VPC and subnet that you pass to the kubeadm module must satisfy the followin
 - The VPC must have an [Internet Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html)
 - The subnet must have a [Route Table](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html) with a route that routes non-local traffic to the Internet Gateway
 - The subnet must be in the VPC
-- The VPC and subnet must be in the same AWS region that is configured for the [AWS provider](https://www.terraform.io/docs/providers/aws/index.html)
+- The VPC and subnet must be in the AWS region that is provided with the `region` variable
 
 ## Creating a VPC
 
-You can use any existing VPC that satisfies the above requirements with the kubeadm module.
+You can use any existing VPC that satisfies the above requirements for this example.
 
-However, if you want to create a new VPC, you have several options:
+If you want to create a new VPC, you can do so in several ways:
 
-- Use the [network submodule](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/modules/network) in this repository (see the [_cluster in dedicated VPC_](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples/ex3-cluster-in-dedicated-vpc) example)
+- Use the [network submodule](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/modules/network) in this repository to create a suitable VPC with Terraform (see the [_cluster in dedicated VPC_](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples/ex3-cluster-in-dedicated-vpc) example)
 - Create a VPC with the following [AWS CLI](https://aws.amazon.com/cli/) commands:
 
   ```bash
