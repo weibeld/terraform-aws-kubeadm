@@ -78,17 +78,21 @@ For more details about the created AWS resources, see [AWS resources](#aws-resou
 
 The module depends on the following prerequisites:
 
-### 1. Terraform is installed
+### 1. Install Terraform
 
-The [Terraform documentation](https://www.terraform.io/downloads.html) includes instruction for installing Terraform on your target platform.
+[Installing Terraform](https://www.terraform.io/downloads.html) is done by simply downloading the Terraform binary for your target platform from the Terraform website and moving it to any directory in your `PATH`.
 
-> On macOS, you can install Terraform with `brew install terraform`.
+On macOS, you can install Terraform alternatively with:
 
-### 2. AWS credentials are configured
+```
+brew install terraform
+```
+
+### 2. Configure AWS credentials
 
 Terraform needs to have access to the **AWS Access Key ID** and **AWS Secret Access Key** of your AWS account in order to create AWS resources.
 
-You can enable this in one of the two following ways:
+You can achieve this in one of the two following ways:
 
 -  Create an [`~/.aws/credentials`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where) file. This is automatically done for you if you configure the [AWS CLI](https://aws.amazon.com/cli/):
 
@@ -103,21 +107,34 @@ You can enable this in one of the two following ways:
     export AWS_SECRET_ACCESS_KEY=<SecretAccessKey>
     ```
 
-### 3. Key pair on your local machine
+### 3. Set up OpenSSH
 
-The module requires you to specify a key pair which will allow you to SSH into the nodes of the cluster.
-
-You can use any key pair on your local machine for this, for example, the default `~/.ssh/id_rsa` (private key) and `~/.ssh/id_rsa.pub` (public key).
-
-You can also create a new key pair with:
+The module depends on the `ssh` and `scp` tools being installed on your local machine. These tools are installed by default on most systems as part of the [OpenSSH](https://www.openssh.com/) package. In the unlikely case that OpenSSH isn't installed on your system, you can install it with:
 
 ```bash
-ssh-keygen -f key
+# Linux
+sudo apt-get install openssh-client
+# macOS
+brew install openssh
 ```
 
-This creates two files named `key` (private key) and `key.pub` (public key).
+Furthermore, the module by default uses the default OpenSSH key pair consisting of `~/.ssh/id_rsa` (private key) and `~/.ssh/id_rsa.pub` (public key) for setting up SSH access to the nodes of the cluster.
 
-> The public key file must be in the [OpenSSH format](https://blog.oddbit.com/post/2011-05-08-converting-openssh-public-keys/) which is the de-facto standard.
+If you currently don't have this key pair on your system, you can generate it by running:
+
+```bash
+ssh-keygen
+```
+
+Note that `~/.ssh/id_rsa` and `~/.ssh/id_rsa.pub` are just default values and you can specify a different key pair to the module (with the `private_key_file` and `public_key_file` variables).
+
+For example, you can generate a dedicated key pair for your cluster with:
+
+```bash
+ssh-keygen -f my-key
+```
+
+Which creates two files named `my-key` (private key) and `my-key.pub` (public key), which you can then specify to the corresponding input variables of the module.
 
 ## AWS resources
 
