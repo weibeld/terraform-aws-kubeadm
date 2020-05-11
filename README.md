@@ -6,7 +6,7 @@ Terraform module for bootstrapping a Kubernetes cluster with kubeadm on AWS.
 
 This module allows to create AWS infrastructure and bootstrap a Kubernetes cluster on it with a single command.
 
-The result of running the module is a freshly bootstrapped Kubernetes cluster — like what you get after manually running `kubeadm init` and `kubeadm join`.
+Running the module results in a freshly bootstrapped Kubernetes cluster — like what you get after manually bootstrapping a cluster with `kubeadm init` and `kubeadm join`.
 
 The module also creates a kubeconfig file on your local machine so that you can access the cluster right away.
 
@@ -38,22 +38,18 @@ provider "aws" {
 
 module "cluster" {
   source           = "weibeld/kubeadm/aws"
-  version          = "~> 0.1"
-  private_key_file = "~/.ssh/id_rsa"
-  public_key_file  = "~/.ssh/id_rsa.pub"
+  version          = "~> 0.2"
 }
 ```
 
-This results in the creation of a Kubernetes cluster with one master node and two worker nodes in the default VPC of the `eu-central-1` region.
+Running `terraform apply` with this configuration results in the creation of a Kubernetes cluster with one master node and two worker nodes in one of the default subnets of the default VPC of the `eu-central-1` region.
 
-The only required variables of the module are `privat_key_file` and `public_key_file` which must specify a key pair on your local machine that will allow you to SSH into the nodes of the cluster.
-
-The cluster is given a random name (such as `relaxed-ocelot`) and the module creates a kubeconfig file on your local machine that is named after the cluster it belongs to (such as `relaxed-ocelot.conf`). By default, this kubeconfig file is created in your current working directory.
+The cluster is given a random name (e.g. `relaxed-ocelot`) and the module creates a kubeconfig file on your local machine that is named after the cluster it belongs to (e.g. `relaxed-ocelot.conf`). By default, this kubeconfig file is created in your current working directory.
 
 You can use this kubeconfig file to access the cluster. For example:
 
 ```bash
-kubectl --kubeconfig relaxed-ocelot.conf get nodes -o wide
+kubectl --kubeconfig relaxed-ocelot.conf get nodes
 ```
 
 > Note that if you execute the above command, you will see that all nodes are `NotReady`. This is the expected behaviour because the cluster does not yet have a CNI plugin installed.
@@ -64,15 +60,17 @@ You may also set the [`KUBECONFIG`](https://kubernetes.io/docs/tasks/access-appl
 export KUBECONFIG=$(pwd)/relaxed-ocelot.conf
 ```
 
-You can SSH into the nodes of your cluster as follows:
+> Note that when you delete the cluster with `terraform destroy`, the kubeconfig file is currently not automatically deleted, thus you have to clean it up yourself if you don't want to have it sticking around.
+
+The module also sets up SSH access to the nodes of the cluster. By default, it uses the OpenSSH default key pair consisting of `~/.ssh/id_rsa` (private key) and `~/.ssh/id_rsa.pub` (public key) on your local machine for this. Thus, you can connect to the nodes of the cluster as follows:
 
 ```bash
-ssh -i ~/.ssh/id_rsa ubuntu@3.121.110.233
+ssh -i ~/.ssh/id_rsa ubuntu@<PUBLIC-IP>
 ```
 
-In the above example, `~/.ssh/id_rsa` is the private key that you specified to the `private_key_file` variable of the module, and `3.121.110.233` is the public IP address of the EC2 instance that corresponds to the desired cluster node.
+The public IP addresses of all the nodes are specified in the output of the module, which you can display with `terraform output`.
 
-For more details about the created AWS resources, see [AWS resources](#aws-resources) below. For more advanced usage examples, see the [examples](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples).
+For details about the created AWS resources, see [AWS resources](#aws-resources) below. For more advanced usage examples, see the [examples](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples).
 
 ## Prerequisites
 
@@ -82,9 +80,9 @@ The module depends on the following prerequisites:
 
 [Installing Terraform](https://www.terraform.io/downloads.html) is done by simply downloading the Terraform binary for your target platform from the Terraform website and moving it to any directory in your `PATH`.
 
-On macOS, you can install Terraform alternatively with:
+On macOS, you can alternatively install Terraform with:
 
-```
+```bash
 brew install terraform
 ```
 
