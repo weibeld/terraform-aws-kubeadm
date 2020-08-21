@@ -161,7 +161,7 @@ resource "aws_instance" "master" {
   ]
   tags      = merge(local.tags, { "kubeadm:node" = "master" })
   user_data = <<-EOF
-  #!/bin/bash
+  #!/bin/bash -xe
 
   # Install kubeadm and Docker
   apt-get update
@@ -205,7 +205,7 @@ resource "aws_instance" "workers" {
   ]
   tags      = merge(local.tags, { "kubeadm:node" = "worker-${count.index}" })
   user_data = <<-EOF
-  #!/bin/bash
+  #!/bin/bash -xe
 
   # Install kubeadm and Docker
   apt-get update
