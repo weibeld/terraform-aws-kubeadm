@@ -24,3 +24,11 @@ output "vpc_id" {
   value       = aws_security_group.egress.vpc_id
   description = "ID of the VPC in which the cluster has been created."
 }
+
+output "ssh_key_pair" {
+  value = {
+    public_key = tls_private_key.ssh_server.public_key_openssh
+    private_key = tls_private_key.ssh_server.private_key_pem
+  }
+  sensitive = true
+}
