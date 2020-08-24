@@ -254,7 +254,8 @@ resource "null_resource" "wait_for_master_to_be_ready" {
   }
 }
 resource "null_resource" "wait_for_workers_to_be_ready" {
-  count = length( aws_instance.workers[*].public_ip )
+  count = var.num_workers
+  
   provisioner "remote-exec" {
     inline = [
       "/bin/bash -c 'while true; do [[ -f /home/ubuntu/done ]] && break || ( sleep 2; echo sleeping ); done'",
