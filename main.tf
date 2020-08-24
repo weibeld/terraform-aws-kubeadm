@@ -186,6 +186,13 @@ resource "aws_instance" "master" {
   chown ubuntu:ubuntu /home/ubuntu/admin.conf
   kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
 
+  %{if var.enable_calico_cni != null~}
+  kubectl --kubeconfig /home/ubuntu/admin.conf create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+  %{endif~}
+  %{if var.enable_schedule_pods_on_master != null~}
+  kubectl --kubeconfig /home/ubuntu/admin.conf taint nodes --all node-role.kubernetes.io/master-
+  %{endif~}
+
   # Indicate completion of bootstrapping on this node
   touch /home/ubuntu/done
   EOF
@@ -276,7 +283,7 @@ locals {
 }
 resource "local_file" "private_key" {
     sensitive_content  = tls_private_key.ssh_server.private_key_pem
-    filename = "${path.module}/kubeadm.pem"
+    filename = "${path.module}/${local.cluster_name}.pem"
     file_permission = "0400"
 }
 resource "null_resource" "download_kubeconfig_file" {
@@ -290,3 +297,4 @@ resource "null_resource" "download_kubeconfig_file" {
     wait_for_master_to_be_ready = null_resource.wait_for_master_to_be_ready.id
   }
 }
+

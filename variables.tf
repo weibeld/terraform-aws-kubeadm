@@ -76,6 +76,18 @@ variable "num_workers" {
   default     = 2
 }
 
+variable "enable_schedule_pods_on_master" {
+  type        = bool
+  description = "Enabling this allows pods to be scheduled on the control plane."
+  default     = false
+}
+
+variable "enable_calico_cni" {
+  type        = bool
+  description = "Enable this to install calico networking."
+  default     = false
+}
+
 variable "tags" {
   type        = map(string)
   description = "A set of tags to assign to the created AWS resources. These tags will be assigned in addition to the default tags. The default tags include \"kubeadm:cluster\" which is assigned to all resources and whose value is the cluster name, and \"kubeadm:node\" which is assigned to the EC2 instances and whose value is the name of the Kubernetes node that this EC2 corresponds to."

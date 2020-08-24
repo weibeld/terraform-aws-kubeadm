@@ -3,4 +3,4 @@ terraform.tfstate*
 terraform.tfvars
 !examples/**/terraform.tfvars
 *.conf
-kubeadm.pem
+*.pem
