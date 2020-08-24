@@ -187,7 +187,7 @@ resource "aws_instance" "master" {
   kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
 
   %{if var.enable_calico_cni != null~}
-  kubectl --kubeconfig /home/ubuntu/admin.conf create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+  kubectl --kubeconfig /home/ubuntu/admin.conf create -f https://docs.projectcalico.org/manifests/calico.yaml
   %{endif~}
   %{if var.enable_schedule_pods_on_master != null~}
   kubectl --kubeconfig /home/ubuntu/admin.conf taint nodes --all node-role.kubernetes.io/master-
