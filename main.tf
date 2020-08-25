@@ -299,3 +299,12 @@ resource "null_resource" "download_kubeconfig_file" {
   }
 }
 
+data "null_data_source" "kubeconfig_file" {
+  inputs = {
+    kubeconfig_file = local.kubeconfig_file
+  }
+  depends_on = [
+    null_resource.download_kubeconfig_file
+  ]
+}
+

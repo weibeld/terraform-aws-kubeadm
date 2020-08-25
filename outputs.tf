@@ -1,6 +1,6 @@
 output "kubeconfig" {
-  value       = local.kubeconfig_file
   description = "Location of the kubeconfig file for the created cluster on the local machine."
+  value = data.null_data_source.kubeconfig_file.outputs["kubeconfig_file"]
 }
 
 output "cluster_name" {
