@@ -306,8 +306,5 @@ data "null_data_source" "kubeconfig_file" {
   depends_on = [
     null_resource.download_kubeconfig_file
   ]
-  provisioner "local-exec" {
-    command =  "until kubectl --kubeconfig ${local.kubeconfig_file} get ns; do sleep 2 && echo sleeping; done"
-  }
 }
 
