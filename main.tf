@@ -300,6 +300,8 @@ resource "null_resource" "download_kubeconfig_file" {
 }
 
 data "null_data_source" "kubeconfig_file" {
+  # Adding dependecy of the kubeconfig file so that a kubernetes provider won't 
+  # use the config file before it is ready.
   inputs = {
     kubeconfig_file = local.kubeconfig_file
   }

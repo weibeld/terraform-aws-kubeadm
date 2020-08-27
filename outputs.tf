@@ -7,6 +7,10 @@ output "cluster_name" {
   value       = local.cluster_name
   description = "Name of the created cluster. This name is used as the value of the \"kubeadm:cluster\" tag assigned to all created AWS resources."
 }
+output "cluster_master_ip" {
+  value       = aws_eip_association.master.public_ip
+  description = "The public IP associated with the master node."
+}
 
 output "cluster_nodes" {
   value = [
