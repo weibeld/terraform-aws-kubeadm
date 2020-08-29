@@ -1,7 +1,7 @@
 output "kubeconfig" {
   description = "Location of the kubeconfig file for the created cluster on the local machine."
   value = local.kubeconfig_file
-
+}
 output "cluster_name" {
   value       = local.cluster_name
   description = "Name of the created cluster. This name is used as the value of the \"kubeadm:cluster\" tag assigned to all created AWS resources."
