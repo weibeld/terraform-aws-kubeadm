@@ -281,7 +281,7 @@ resource "null_resource" "wait_for_workers_to_be_ready" {
 
 locals {
   kubeconfig_file = var.kubeconfig_file != null ? abspath(pathexpand(var.kubeconfig_file)) : "${abspath(pathexpand(var.kubeconfig_dir))}/${local.cluster_name}.conf"
-  kubeconfig_dir = var.kubeconfig_dir != null ? abspath(pathexpand(var.kubeconfig_dir)) : "."
+  kubeconfig_dir  = var.kubeconfig_dir != null ? abspath(pathexpand(var.kubeconfig_dir)) : "."
 }
 resource "local_file" "private_key" {
     sensitive_content  = tls_private_key.ssh_server.private_key_pem
@@ -301,14 +301,4 @@ resource "null_resource" "download_kubeconfig_file" {
   }
 }
 
-data "null_data_source" "kubeconfig_file" {
-  # Adding dependecy of the kubeconfig file so that a kubernetes provider won't 
-  # use the config file before it is ready.
-  inputs = {
-    kubeconfig_file = local.kubeconfig_file
-  }
-  depends_on = [
-    null_resource.download_kubeconfig_file
-  ]
-}
 
