@@ -292,7 +292,6 @@ resource "null_resource" "download_kubeconfig_file" {
   provisioner "local-exec" {
     command = <<-EOF
     alias scp='scp -q -i ${var.private_key_file} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-    mkdir -p ${local.kubeconfig_dir}
     scp ubuntu@${aws_eip.master.public_ip}:/home/ubuntu/admin.conf ${local.kubeconfig_file} >/dev/null
     EOF
   }
