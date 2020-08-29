@@ -281,7 +281,6 @@ resource "null_resource" "wait_for_workers_to_be_ready" {
 
 locals {
   kubeconfig_file = var.kubeconfig_file != null ? abspath(pathexpand(var.kubeconfig_file)) : "${abspath(pathexpand(var.kubeconfig_dir))}/${local.cluster_name}.conf"
-  kubeconfig_dir  = var.kubeconfig_dir != null ? abspath(pathexpand(var.kubeconfig_dir)) : "."
 }
 resource "local_file" "private_key" {
     sensitive_content  = tls_private_key.ssh_server.private_key_pem
