@@ -17,10 +17,17 @@ locals {
 # Key pair
 #------------------------------------------------------------------------------#
 
+# Creates a key pair
+resource "tls_private_key" "ssh_server" {
+  # This resource is not recommended for production environements
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
 # Performs 'ImportKeyPair' API operation (not 'CreateKeyPair')
 resource "aws_key_pair" "main" {
   key_name_prefix = "${local.cluster_name}-"
-  public_key      = file(var.public_key_file)
+  public_key      = var.public_key_file != null ? file(var.public_key_file) : tls_private_key.ssh_server.public_key_openssh
   tags            = local.tags
 }
 
@@ -154,7 +161,7 @@ resource "aws_instance" "master" {
   ]
   tags      = merge(local.tags, { "kubeadm:node" = "master" })
   user_data = <<-EOF
-  #!/bin/bash
+  #!/bin/bash -xe
 
   # Install kubeadm and Docker
   apt-get update
@@ -179,6 +186,13 @@ resource "aws_instance" "master" {
   chown ubuntu:ubuntu /home/ubuntu/admin.conf
   kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
 
+  %{if var.enable_calico_cni != null~}
+  kubectl --kubeconfig /home/ubuntu/admin.conf create -f https://docs.projectcalico.org/manifests/calico.yaml
+  %{endif~}
+  %{if var.enable_schedule_pods_on_master != null~}
+  kubectl --kubeconfig /home/ubuntu/admin.conf taint nodes --all node-role.kubernetes.io/master-
+  %{endif~}
+
   # Indicate completion of bootstrapping on this node
   touch /home/ubuntu/done
   EOF
@@ -198,7 +212,7 @@ resource "aws_instance" "workers" {
   ]
   tags      = merge(local.tags, { "kubeadm:node" = "worker-${count.index}" })
   user_data = <<-EOF
-  #!/bin/bash
+  #!/bin/bash -xe
 
   # Install kubeadm and Docker
   apt-get update
@@ -223,23 +237,42 @@ resource "aws_instance" "workers" {
 # Wait for bootstrap to finish on all nodes
 #------------------------------------------------------------------------------#
 
-resource "null_resource" "wait_for_bootstrap_to_finish" {
-  provisioner "local-exec" {
-    command = <<-EOF
-    alias ssh='ssh -q -i ${var.private_key_file} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-    while true; do
-      sleep 2
-      ! ssh ubuntu@${aws_eip.master.public_ip} [[ -f /home/ubuntu/done ]] >/dev/null && continue
-      %{for worker_public_ip in aws_instance.workers[*].public_ip~}
-      ! ssh ubuntu@${worker_public_ip} [[ -f /home/ubuntu/done ]] >/dev/null && continue
-      %{endfor~}
-      break
-    done
-    EOF
+resource "null_resource" "wait_for_master_to_be_ready" {
+  provisioner "remote-exec" {
+    inline = [
+      "/bin/bash -c 'while true; do [[ -f /home/ubuntu/done ]] && break || ( sleep 2; echo sleeping ); done'",
+    ]
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = var.private_key_file != null ? file(var.private_key_file) : tls_private_key.ssh_server.private_key_pem
+      host        = aws_eip.master.public_ip
+    }
   }
   triggers = {
-    instance_ids = join(",", concat([aws_instance.master.id], aws_instance.workers[*].id))
+    "instance_ids" = aws_instance.master.id
   }
+}
+resource "null_resource" "wait_for_workers_to_be_ready" {
+  count = var.num_workers
+  
+  provisioner "remote-exec" {
+    inline = [
+      "/bin/bash -c 'while true; do [[ -f /home/ubuntu/done ]] && break || ( sleep 2; echo sleeping ); done'",
+    ]
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = var.private_key_file != null ? file(var.private_key_file) : tls_private_key.ssh_server.private_key_pem
+      host        = aws_instance.workers[count.index].public_ip
+    }
+  }
+  triggers = {
+    "instance_ids" = join(",", aws_instance.workers[*].id)
+  }
+  depends_on = [
+    null_resource.wait_for_master_to_be_ready,
+  ]
 }
 
 #------------------------------------------------------------------------------#
@@ -249,7 +282,11 @@ resource "null_resource" "wait_for_bootstrap_to_finish" {
 locals {
   kubeconfig_file = var.kubeconfig_file != null ? abspath(pathexpand(var.kubeconfig_file)) : "${abspath(pathexpand(var.kubeconfig_dir))}/${local.cluster_name}.conf"
 }
-
+resource "local_file" "private_key" {
+    sensitive_content  = tls_private_key.ssh_server.private_key_pem
+    filename = "${path.module}/${local.cluster_name}.pem"
+    file_permission = "0400"
+}
 resource "null_resource" "download_kubeconfig_file" {
   provisioner "local-exec" {
     command = <<-EOF
@@ -259,6 +296,18 @@ resource "null_resource" "download_kubeconfig_file" {
     EOF
   }
   triggers = {
-    wait_for_bootstrap_to_finish = null_resource.wait_for_bootstrap_to_finish.id
+    wait_for_master_to_be_ready = null_resource.wait_for_master_to_be_ready.id
   }
 }
+
+data "null_data_source" "kubeconfig_file" {
+  # Adding dependecy of the kubeconfig file so that a kubernetes provider won't 
+  # use the config file before it is ready.
+  inputs = {
+    kubeconfig_file = local.kubeconfig_file
+  }
+  depends_on = [
+    null_resource.download_kubeconfig_file
+  ]
+}
+

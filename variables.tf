@@ -1,13 +1,13 @@
 variable "private_key_file" {
   type        = string
   description = "Filename of the private key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
-  default     = "~/.ssh/id_rsa"
+  default     = null
 }
 
 variable "public_key_file" {
   type        = string
   description = "Filename of the public key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
-  default     = "~/.ssh/id_rsa.pub"
+  default     = null
 }
 
 variable "vpc_id" {
@@ -74,6 +74,18 @@ variable "num_workers" {
   type        = number
   description = "Number of worker nodes."
   default     = 2
+}
+
+variable "enable_schedule_pods_on_master" {
+  type        = bool
+  description = "Enabling this allows pods to be scheduled on the control plane."
+  default     = false
+}
+
+variable "enable_calico_cni" {
+  type        = bool
+  description = "Enable this to install calico networking."
+  default     = false
 }
 
 variable "tags" {
