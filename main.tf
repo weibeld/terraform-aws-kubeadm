@@ -281,6 +281,7 @@ resource "null_resource" "wait_for_workers_to_be_ready" {
 
 locals {
   kubeconfig_file = var.kubeconfig_file != null ? abspath(pathexpand(var.kubeconfig_file)) : "${abspath(pathexpand(var.kubeconfig_dir))}/${local.cluster_name}.conf"
+  kubeconfig_dir  = var.kubeconfig_dir != null ? abspath(pathexpand(var.kubeconfig_file)) : "."
 }
 resource "local_file" "private_key" {
     sensitive_content  = tls_private_key.ssh_server.private_key_pem
@@ -290,7 +291,8 @@ resource "local_file" "private_key" {
 resource "null_resource" "download_kubeconfig_file" {
   provisioner "local-exec" {
     command = <<-EOF
-    alias scp='scp -q -i ${var.private_key_file} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    alias scp='scp -q -i ${var.private_key_file != null ? var.private_key_file : local_file.private_key.filename} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    mkdir -p ${local.kubeconfig_dir}
     scp ubuntu@${aws_eip.master.public_ip}:/home/ubuntu/admin.conf ${local.kubeconfig_file} >/dev/null
     EOF
   }
