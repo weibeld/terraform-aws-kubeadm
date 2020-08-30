@@ -6,7 +6,7 @@ module "network" {
   source     = "weibeld/kubeadm/aws//modules/network"
   version    = "~> 0.2"
   cidr_block = "10.0.0.0/16"
-  tags       = { "kubeadm:cluster" = module.cluster.cluster_name }
+  tags       = { "terraform-kubeadm:cluster" = module.cluster.cluster_name }
 }
 
 module "cluster" {

@@ -5,7 +5,7 @@ output "kubeconfig" {
 
 output "cluster_name" {
   value       = module.cluster.cluster_name
-  description = "Name of the created cluster. This name is used as the value of the \"kubeadm:cluster\" tag assigned to all created resources."
+  description = "Name of the created cluster. This name is used as the value of the \"terraform-kubeadm:cluster\" tag assigned to all created resources."
 }
 
 output "cluster_nodes" {
