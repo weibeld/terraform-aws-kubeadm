@@ -10,7 +10,7 @@ resource "random_pet" "cluster_name" {}
 
 locals {
   cluster_name = var.cluster_name != null ? var.cluster_name : random_pet.cluster_name.id
-  tags         = merge(var.tags, { "kubeadm:cluster" = local.cluster_name })
+  tags         = merge(var.tags, { "terraform-kubeadm:cluster" = local.cluster_name })
 }
 
 #------------------------------------------------------------------------------#
@@ -152,7 +152,7 @@ resource "aws_instance" "master" {
     aws_security_group.ingress_k8s.id,
     aws_security_group.ingress_ssh.id
   ]
-  tags      = merge(local.tags, { "kubeadm:node" = "master" })
+  tags      = merge(local.tags, { "terraform-kubeadm:node" = "master" })
   user_data = <<-EOF
   #!/bin/bash
 
@@ -196,7 +196,7 @@ resource "aws_instance" "workers" {
     aws_security_group.ingress_internal.id,
     aws_security_group.ingress_ssh.id
   ]
-  tags      = merge(local.tags, { "kubeadm:node" = "worker-${count.index}" })
+  tags      = merge(local.tags, { "terraform-kubeadm:node" = "worker-${count.index}" })
   user_data = <<-EOF
   #!/bin/bash
 
