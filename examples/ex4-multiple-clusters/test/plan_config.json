@@ -1,0 +1,5630 @@
+{
+  "format_version": "0.1",
+  "terraform_version": "0.13.5",
+  "variables": {
+    "cluster_names": {
+      "value": [
+        "alpha",
+        "beta",
+        "gamma"
+      ]
+    },
+    "region": {
+      "value": "us-east-1"
+    }
+  },
+  "planned_values": {
+    "outputs": {
+      "cluster_names": {
+        "sensitive": false,
+        "value": [
+          "alpha",
+          "beta",
+          "gamma"
+        ]
+      },
+      "cluster_nodes": {
+        "sensitive": false
+      },
+      "kubeconfigs": {
+        "sensitive": false,
+        "value": {
+          "alpha": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/alpha.conf",
+          "beta": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/beta.conf",
+          "gamma": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/gamma.conf"
+        }
+      }
+    },
+    "root_module": {
+      "child_modules": [
+        {
+          "resources": [
+            {
+              "address": "module.cluster_1.aws_eip.master",
+              "mode": "managed",
+              "type": "aws_eip",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "associate_with_private_ip": null,
+                "customer_owned_ipv4_pool": null,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha",
+                  "terraform-kubeadm:cluster": "alpha"
+                },
+                "timeouts": null,
+                "vpc": true
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_eip_association.master",
+              "mode": "managed",
+              "type": "aws_eip_association",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "allow_reassociation": null
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_instance.master",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.medium",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha-master",
+                  "terraform-kubeadm:cluster": "alpha",
+                  "terraform-kubeadm:node": "master"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_instance.workers[0]",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "workers",
+              "index": 0,
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "associate_public_ip_address": true,
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.small",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha-worker-0",
+                  "terraform-kubeadm:cluster": "alpha",
+                  "terraform-kubeadm:node": "worker-0"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_instance.workers[1]",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "workers",
+              "index": 1,
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "associate_public_ip_address": true,
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.small",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha-worker-1",
+                  "terraform-kubeadm:cluster": "alpha",
+                  "terraform-kubeadm:node": "worker-1"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_key_pair.main",
+              "mode": "managed",
+              "type": "aws_key_pair",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "key_name_prefix": "alpha-",
+                "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBdDLn5dn58+TXuOYyQUFEoM182DwbRi5mgygYeXuHL+xGEjb2QUdYmyE3Wa6lagw/m+TY5FLrvwiVGQLH4m70vQfxg6G/ghX1QH0s69+1g/zuEJOwJpSo4WIoUT3aD5k2vBQWZTFCefP2M2mstWNE2tmU4oE2Tc3hfoJWGpJ1NO5n+/MavApRuAI3UY6blagKKHKPcLehOcCgVLpd+iJAJS3DeT8VV2jXGGP4VVmZrsTWycd07ujfX0x6PuppZDEybhakuAR6P+t4GHkEUkbK8DsHRzXT9CQ5ebkppTHOAmwqTReZ2jgazp7czi7flmCEep5cAaJS6d/1OQjyQxCb sonarqube@sonarqube.fios-router.home",
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha",
+                  "terraform-kubeadm:cluster": "alpha"
+                }
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_security_group.egress",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "egress",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow all outgoing traffic to everywhere",
+                "egress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 0
+                  }
+                ],
+                "name": "alpha-egress",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha",
+                  "terraform-kubeadm:cluster": "alpha"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_security_group.ingress_internal",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_internal",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow all incoming traffic from nodes and Pods in the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [],
+                    "description": "Allow incoming traffic from cluster nodes",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": true,
+                    "to_port": 0
+                  },
+                  {
+                    "cidr_blocks": [],
+                    "description": "Allow incoming traffic from the Pods of the cluster",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 0
+                  }
+                ],
+                "name": "alpha-ingress-internal",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha",
+                  "terraform-kubeadm:cluster": "alpha"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_security_group.ingress_k8s",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_k8s",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 6443,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "tcp",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 6443
+                  }
+                ],
+                "name": "alpha-ingress-k8s",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha",
+                  "terraform-kubeadm:cluster": "alpha"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_1.aws_security_group.ingress_ssh",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_ssh",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow incoming SSH traffic (TCP/22) from outside the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 22,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "tcp",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 22
+                  }
+                ],
+                "name": "alpha-ingress-ssh",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "alpha",
+                  "terraform-kubeadm:cluster": "alpha"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_1.null_resource.download_kubeconfig_file",
+              "mode": "managed",
+              "type": "null_resource",
+              "name": "download_kubeconfig_file",
+              "provider_name": "registry.terraform.io/hashicorp/null",
+              "schema_version": 0
+            },
+            {
+              "address": "module.cluster_1.null_resource.wait_for_bootstrap_to_finish",
+              "mode": "managed",
+              "type": "null_resource",
+              "name": "wait_for_bootstrap_to_finish",
+              "provider_name": "registry.terraform.io/hashicorp/null",
+              "schema_version": 0
+            },
+            {
+              "address": "module.cluster_1.random_pet.cluster_name",
+              "mode": "managed",
+              "type": "random_pet",
+              "name": "cluster_name",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 0,
+              "values": {
+                "keepers": null,
+                "length": 2,
+                "prefix": null,
+                "separator": "-"
+              }
+            },
+            {
+              "address": "module.cluster_1.random_string.token_id",
+              "mode": "managed",
+              "type": "random_string",
+              "name": "token_id",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 1,
+              "values": {
+                "keepers": null,
+                "length": 6,
+                "lower": true,
+                "min_lower": 0,
+                "min_numeric": 0,
+                "min_special": 0,
+                "min_upper": 0,
+                "number": true,
+                "override_special": null,
+                "special": false,
+                "upper": false
+              }
+            },
+            {
+              "address": "module.cluster_1.random_string.token_secret",
+              "mode": "managed",
+              "type": "random_string",
+              "name": "token_secret",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 1,
+              "values": {
+                "keepers": null,
+                "length": 16,
+                "lower": true,
+                "min_lower": 0,
+                "min_numeric": 0,
+                "min_special": 0,
+                "min_upper": 0,
+                "number": true,
+                "override_special": null,
+                "special": false,
+                "upper": false
+              }
+            }
+          ],
+          "address": "module.cluster_1"
+        },
+        {
+          "resources": [
+            {
+              "address": "module.cluster_2.aws_eip.master",
+              "mode": "managed",
+              "type": "aws_eip",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "associate_with_private_ip": null,
+                "customer_owned_ipv4_pool": null,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta",
+                  "terraform-kubeadm:cluster": "beta"
+                },
+                "timeouts": null,
+                "vpc": true
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_eip_association.master",
+              "mode": "managed",
+              "type": "aws_eip_association",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "allow_reassociation": null
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_instance.master",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.medium",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta-master",
+                  "terraform-kubeadm:cluster": "beta",
+                  "terraform-kubeadm:node": "master"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_instance.workers[0]",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "workers",
+              "index": 0,
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "associate_public_ip_address": true,
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.small",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta-worker-0",
+                  "terraform-kubeadm:cluster": "beta",
+                  "terraform-kubeadm:node": "worker-0"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_instance.workers[1]",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "workers",
+              "index": 1,
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "associate_public_ip_address": true,
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.small",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta-worker-1",
+                  "terraform-kubeadm:cluster": "beta",
+                  "terraform-kubeadm:node": "worker-1"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_key_pair.main",
+              "mode": "managed",
+              "type": "aws_key_pair",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "key_name_prefix": "beta-",
+                "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBdDLn5dn58+TXuOYyQUFEoM182DwbRi5mgygYeXuHL+xGEjb2QUdYmyE3Wa6lagw/m+TY5FLrvwiVGQLH4m70vQfxg6G/ghX1QH0s69+1g/zuEJOwJpSo4WIoUT3aD5k2vBQWZTFCefP2M2mstWNE2tmU4oE2Tc3hfoJWGpJ1NO5n+/MavApRuAI3UY6blagKKHKPcLehOcCgVLpd+iJAJS3DeT8VV2jXGGP4VVmZrsTWycd07ujfX0x6PuppZDEybhakuAR6P+t4GHkEUkbK8DsHRzXT9CQ5ebkppTHOAmwqTReZ2jgazp7czi7flmCEep5cAaJS6d/1OQjyQxCb sonarqube@sonarqube.fios-router.home",
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta",
+                  "terraform-kubeadm:cluster": "beta"
+                }
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_security_group.egress",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "egress",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow all outgoing traffic to everywhere",
+                "egress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 0
+                  }
+                ],
+                "name": "beta-egress",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta",
+                  "terraform-kubeadm:cluster": "beta"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_security_group.ingress_internal",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_internal",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow all incoming traffic from nodes and Pods in the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [],
+                    "description": "Allow incoming traffic from cluster nodes",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": true,
+                    "to_port": 0
+                  },
+                  {
+                    "cidr_blocks": [],
+                    "description": "Allow incoming traffic from the Pods of the cluster",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 0
+                  }
+                ],
+                "name": "beta-ingress-internal",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta",
+                  "terraform-kubeadm:cluster": "beta"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_security_group.ingress_k8s",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_k8s",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 6443,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "tcp",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 6443
+                  }
+                ],
+                "name": "beta-ingress-k8s",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta",
+                  "terraform-kubeadm:cluster": "beta"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_2.aws_security_group.ingress_ssh",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_ssh",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow incoming SSH traffic (TCP/22) from outside the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 22,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "tcp",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 22
+                  }
+                ],
+                "name": "beta-ingress-ssh",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "beta",
+                  "terraform-kubeadm:cluster": "beta"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_2.null_resource.download_kubeconfig_file",
+              "mode": "managed",
+              "type": "null_resource",
+              "name": "download_kubeconfig_file",
+              "provider_name": "registry.terraform.io/hashicorp/null",
+              "schema_version": 0
+            },
+            {
+              "address": "module.cluster_2.null_resource.wait_for_bootstrap_to_finish",
+              "mode": "managed",
+              "type": "null_resource",
+              "name": "wait_for_bootstrap_to_finish",
+              "provider_name": "registry.terraform.io/hashicorp/null",
+              "schema_version": 0
+            },
+            {
+              "address": "module.cluster_2.random_pet.cluster_name",
+              "mode": "managed",
+              "type": "random_pet",
+              "name": "cluster_name",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 0,
+              "values": {
+                "keepers": null,
+                "length": 2,
+                "prefix": null,
+                "separator": "-"
+              }
+            },
+            {
+              "address": "module.cluster_2.random_string.token_id",
+              "mode": "managed",
+              "type": "random_string",
+              "name": "token_id",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 1,
+              "values": {
+                "keepers": null,
+                "length": 6,
+                "lower": true,
+                "min_lower": 0,
+                "min_numeric": 0,
+                "min_special": 0,
+                "min_upper": 0,
+                "number": true,
+                "override_special": null,
+                "special": false,
+                "upper": false
+              }
+            },
+            {
+              "address": "module.cluster_2.random_string.token_secret",
+              "mode": "managed",
+              "type": "random_string",
+              "name": "token_secret",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 1,
+              "values": {
+                "keepers": null,
+                "length": 16,
+                "lower": true,
+                "min_lower": 0,
+                "min_numeric": 0,
+                "min_special": 0,
+                "min_upper": 0,
+                "number": true,
+                "override_special": null,
+                "special": false,
+                "upper": false
+              }
+            }
+          ],
+          "address": "module.cluster_2"
+        },
+        {
+          "resources": [
+            {
+              "address": "module.cluster_3.aws_eip.master",
+              "mode": "managed",
+              "type": "aws_eip",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "associate_with_private_ip": null,
+                "customer_owned_ipv4_pool": null,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma",
+                  "terraform-kubeadm:cluster": "gamma"
+                },
+                "timeouts": null,
+                "vpc": true
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_eip_association.master",
+              "mode": "managed",
+              "type": "aws_eip_association",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "allow_reassociation": null
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_instance.master",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "master",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.medium",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma-master",
+                  "terraform-kubeadm:cluster": "gamma",
+                  "terraform-kubeadm:node": "master"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_instance.workers[0]",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "workers",
+              "index": 0,
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "associate_public_ip_address": true,
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.small",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma-worker-0",
+                  "terraform-kubeadm:cluster": "gamma",
+                  "terraform-kubeadm:node": "worker-0"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_instance.workers[1]",
+              "mode": "managed",
+              "type": "aws_instance",
+              "name": "workers",
+              "index": 1,
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "ami": "ami-08b277333b9511393",
+                "associate_public_ip_address": true,
+                "credit_specification": [],
+                "disable_api_termination": null,
+                "ebs_optimized": null,
+                "get_password_data": false,
+                "hibernation": null,
+                "iam_instance_profile": null,
+                "instance_initiated_shutdown_behavior": null,
+                "instance_type": "t2.small",
+                "monitoring": null,
+                "source_dest_check": true,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma-worker-1",
+                  "terraform-kubeadm:cluster": "gamma",
+                  "terraform-kubeadm:node": "worker-1"
+                },
+                "timeouts": null,
+                "user_data_base64": null
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_key_pair.main",
+              "mode": "managed",
+              "type": "aws_key_pair",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "key_name_prefix": "gamma-",
+                "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBdDLn5dn58+TXuOYyQUFEoM182DwbRi5mgygYeXuHL+xGEjb2QUdYmyE3Wa6lagw/m+TY5FLrvwiVGQLH4m70vQfxg6G/ghX1QH0s69+1g/zuEJOwJpSo4WIoUT3aD5k2vBQWZTFCefP2M2mstWNE2tmU4oE2Tc3hfoJWGpJ1NO5n+/MavApRuAI3UY6blagKKHKPcLehOcCgVLpd+iJAJS3DeT8VV2jXGGP4VVmZrsTWycd07ujfX0x6PuppZDEybhakuAR6P+t4GHkEUkbK8DsHRzXT9CQ5ebkppTHOAmwqTReZ2jgazp7czi7flmCEep5cAaJS6d/1OQjyQxCb sonarqube@sonarqube.fios-router.home",
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma",
+                  "terraform-kubeadm:cluster": "gamma"
+                }
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_security_group.egress",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "egress",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow all outgoing traffic to everywhere",
+                "egress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 0
+                  }
+                ],
+                "name": "gamma-egress",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma",
+                  "terraform-kubeadm:cluster": "gamma"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_security_group.ingress_internal",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_internal",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow all incoming traffic from nodes and Pods in the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [],
+                    "description": "Allow incoming traffic from cluster nodes",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": true,
+                    "to_port": 0
+                  },
+                  {
+                    "cidr_blocks": [],
+                    "description": "Allow incoming traffic from the Pods of the cluster",
+                    "from_port": 0,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "-1",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 0
+                  }
+                ],
+                "name": "gamma-ingress-internal",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma",
+                  "terraform-kubeadm:cluster": "gamma"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_security_group.ingress_k8s",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_k8s",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 6443,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "tcp",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 6443
+                  }
+                ],
+                "name": "gamma-ingress-k8s",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma",
+                  "terraform-kubeadm:cluster": "gamma"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_3.aws_security_group.ingress_ssh",
+              "mode": "managed",
+              "type": "aws_security_group",
+              "name": "ingress_ssh",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "description": "Allow incoming SSH traffic (TCP/22) from outside the cluster",
+                "ingress": [
+                  {
+                    "cidr_blocks": [
+                      "0.0.0.0/0"
+                    ],
+                    "description": "",
+                    "from_port": 22,
+                    "ipv6_cidr_blocks": [],
+                    "prefix_list_ids": [],
+                    "protocol": "tcp",
+                    "security_groups": [],
+                    "self": false,
+                    "to_port": 22
+                  }
+                ],
+                "name": "gamma-ingress-ssh",
+                "name_prefix": null,
+                "revoke_rules_on_delete": false,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "gamma",
+                  "terraform-kubeadm:cluster": "gamma"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.cluster_3.null_resource.download_kubeconfig_file",
+              "mode": "managed",
+              "type": "null_resource",
+              "name": "download_kubeconfig_file",
+              "provider_name": "registry.terraform.io/hashicorp/null",
+              "schema_version": 0
+            },
+            {
+              "address": "module.cluster_3.null_resource.wait_for_bootstrap_to_finish",
+              "mode": "managed",
+              "type": "null_resource",
+              "name": "wait_for_bootstrap_to_finish",
+              "provider_name": "registry.terraform.io/hashicorp/null",
+              "schema_version": 0
+            },
+            {
+              "address": "module.cluster_3.random_pet.cluster_name",
+              "mode": "managed",
+              "type": "random_pet",
+              "name": "cluster_name",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 0,
+              "values": {
+                "keepers": null,
+                "length": 2,
+                "prefix": null,
+                "separator": "-"
+              }
+            },
+            {
+              "address": "module.cluster_3.random_string.token_id",
+              "mode": "managed",
+              "type": "random_string",
+              "name": "token_id",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 1,
+              "values": {
+                "keepers": null,
+                "length": 6,
+                "lower": true,
+                "min_lower": 0,
+                "min_numeric": 0,
+                "min_special": 0,
+                "min_upper": 0,
+                "number": true,
+                "override_special": null,
+                "special": false,
+                "upper": false
+              }
+            },
+            {
+              "address": "module.cluster_3.random_string.token_secret",
+              "mode": "managed",
+              "type": "random_string",
+              "name": "token_secret",
+              "provider_name": "registry.terraform.io/hashicorp/random",
+              "schema_version": 1,
+              "values": {
+                "keepers": null,
+                "length": 16,
+                "lower": true,
+                "min_lower": 0,
+                "min_numeric": 0,
+                "min_special": 0,
+                "min_upper": 0,
+                "number": true,
+                "override_special": null,
+                "special": false,
+                "upper": false
+              }
+            }
+          ],
+          "address": "module.cluster_3"
+        },
+        {
+          "resources": [
+            {
+              "address": "module.network.aws_internet_gateway.main",
+              "mode": "managed",
+              "type": "aws_internet_gateway",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "tags": {
+                  "Environment": "development",
+                  "Name": "terraform-kubeadm"
+                }
+              }
+            },
+            {
+              "address": "module.network.aws_route_table.main",
+              "mode": "managed",
+              "type": "aws_route_table",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "route": [
+                  {
+                    "cidr_block": "0.0.0.0/0",
+                    "egress_only_gateway_id": "",
+                    "instance_id": "",
+                    "ipv6_cidr_block": "",
+                    "local_gateway_id": "",
+                    "nat_gateway_id": "",
+                    "network_interface_id": "",
+                    "transit_gateway_id": "",
+                    "vpc_peering_connection_id": ""
+                  }
+                ],
+                "tags": {
+                  "Environment": "development",
+                  "Name": "terraform-kubeadm"
+                }
+              }
+            },
+            {
+              "address": "module.network.aws_route_table_association.main",
+              "mode": "managed",
+              "type": "aws_route_table_association",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 0,
+              "values": {
+                "gateway_id": null
+              }
+            },
+            {
+              "address": "module.network.aws_subnet.main",
+              "mode": "managed",
+              "type": "aws_subnet",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "assign_ipv6_address_on_creation": false,
+                "cidr_block": "172.31.0.0/16",
+                "ipv6_cidr_block": null,
+                "map_public_ip_on_launch": false,
+                "outpost_arn": null,
+                "tags": {
+                  "Environment": "development",
+                  "Name": "terraform-kubeadm"
+                },
+                "timeouts": null
+              }
+            },
+            {
+              "address": "module.network.aws_vpc.main",
+              "mode": "managed",
+              "type": "aws_vpc",
+              "name": "main",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 1,
+              "values": {
+                "assign_generated_ipv6_cidr_block": false,
+                "cidr_block": "172.31.0.0/16",
+                "enable_dns_support": true,
+                "instance_tenancy": "default",
+                "tags": {
+                  "Environment": "development",
+                  "Name": "terraform-kubeadm"
+                }
+              }
+            }
+          ],
+          "address": "module.network"
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "module.cluster_1.aws_eip.master",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_eip",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "associate_with_private_ip": null,
+          "customer_owned_ipv4_pool": null,
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha",
+            "terraform-kubeadm:cluster": "alpha"
+          },
+          "timeouts": null,
+          "vpc": true
+        },
+        "after_unknown": {
+          "allocation_id": true,
+          "association_id": true,
+          "customer_owned_ip": true,
+          "domain": true,
+          "id": true,
+          "instance": true,
+          "network_border_group": true,
+          "network_interface": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "public_ipv4_pool": true,
+          "tags": {}
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_eip_association.master",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_eip_association",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "allow_reassociation": null
+        },
+        "after_unknown": {
+          "allocation_id": true,
+          "id": true,
+          "instance_id": true,
+          "network_interface_id": true,
+          "private_ip_address": true,
+          "public_ip": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_instance.master",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.medium",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha-master",
+            "terraform-kubeadm:cluster": "alpha",
+            "terraform-kubeadm:node": "master"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "associate_public_ip_address": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_instance.workers[0]",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "workers",
+      "index": 0,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "associate_public_ip_address": true,
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.small",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha-worker-0",
+            "terraform-kubeadm:cluster": "alpha",
+            "terraform-kubeadm:node": "worker-0"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_instance.workers[1]",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "workers",
+      "index": 1,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "associate_public_ip_address": true,
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.small",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha-worker-1",
+            "terraform-kubeadm:cluster": "alpha",
+            "terraform-kubeadm:node": "worker-1"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_key_pair.main",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_key_pair",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "key_name_prefix": "alpha-",
+          "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBdDLn5dn58+TXuOYyQUFEoM182DwbRi5mgygYeXuHL+xGEjb2QUdYmyE3Wa6lagw/m+TY5FLrvwiVGQLH4m70vQfxg6G/ghX1QH0s69+1g/zuEJOwJpSo4WIoUT3aD5k2vBQWZTFCefP2M2mstWNE2tmU4oE2Tc3hfoJWGpJ1NO5n+/MavApRuAI3UY6blagKKHKPcLehOcCgVLpd+iJAJS3DeT8VV2jXGGP4VVmZrsTWycd07ujfX0x6PuppZDEybhakuAR6P+t4GHkEUkbK8DsHRzXT9CQ5ebkppTHOAmwqTReZ2jgazp7czi7flmCEep5cAaJS6d/1OQjyQxCb sonarqube@sonarqube.fios-router.home",
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha",
+            "terraform-kubeadm:cluster": "alpha"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "fingerprint": true,
+          "id": true,
+          "key_name": true,
+          "key_pair_id": true,
+          "tags": {}
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_security_group.egress",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "egress",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow all outgoing traffic to everywhere",
+          "egress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": false,
+              "to_port": 0
+            }
+          ],
+          "name": "alpha-egress",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha",
+            "terraform-kubeadm:cluster": "alpha"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "id": true,
+          "ingress": true,
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_security_group.ingress_internal",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_internal",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow all incoming traffic from nodes and Pods in the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [],
+              "description": "Allow incoming traffic from cluster nodes",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": true,
+              "to_port": 0
+            },
+            {
+              "cidr_blocks": [],
+              "description": "Allow incoming traffic from the Pods of the cluster",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": false,
+              "to_port": 0
+            }
+          ],
+          "name": "alpha-ingress-internal",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha",
+            "terraform-kubeadm:cluster": "alpha"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            },
+            {
+              "cidr_blocks": [],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_security_group.ingress_k8s",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_k8s",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 6443,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 6443
+            }
+          ],
+          "name": "alpha-ingress-k8s",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha",
+            "terraform-kubeadm:cluster": "alpha"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.aws_security_group.ingress_ssh",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_ssh",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow incoming SSH traffic (TCP/22) from outside the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22
+            }
+          ],
+          "name": "alpha-ingress-ssh",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "alpha",
+            "terraform-kubeadm:cluster": "alpha"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.null_resource.download_kubeconfig_file",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "download_kubeconfig_file",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {},
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.null_resource.wait_for_bootstrap_to_finish",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "wait_for_bootstrap_to_finish",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {},
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.random_pet.cluster_name",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "random_pet",
+      "name": "cluster_name",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 2,
+          "prefix": null,
+          "separator": "-"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.random_string.token_id",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "random_string",
+      "name": "token_id",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 6,
+          "lower": true,
+          "min_lower": 0,
+          "min_numeric": 0,
+          "min_special": 0,
+          "min_upper": 0,
+          "number": true,
+          "override_special": null,
+          "special": false,
+          "upper": false
+        },
+        "after_unknown": {
+          "id": true,
+          "result": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_1.random_string.token_secret",
+      "module_address": "module.cluster_1",
+      "mode": "managed",
+      "type": "random_string",
+      "name": "token_secret",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 16,
+          "lower": true,
+          "min_lower": 0,
+          "min_numeric": 0,
+          "min_special": 0,
+          "min_upper": 0,
+          "number": true,
+          "override_special": null,
+          "special": false,
+          "upper": false
+        },
+        "after_unknown": {
+          "id": true,
+          "result": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_eip.master",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_eip",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "associate_with_private_ip": null,
+          "customer_owned_ipv4_pool": null,
+          "tags": {
+            "Environment": "development",
+            "Name": "beta",
+            "terraform-kubeadm:cluster": "beta"
+          },
+          "timeouts": null,
+          "vpc": true
+        },
+        "after_unknown": {
+          "allocation_id": true,
+          "association_id": true,
+          "customer_owned_ip": true,
+          "domain": true,
+          "id": true,
+          "instance": true,
+          "network_border_group": true,
+          "network_interface": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "public_ipv4_pool": true,
+          "tags": {}
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_eip_association.master",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_eip_association",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "allow_reassociation": null
+        },
+        "after_unknown": {
+          "allocation_id": true,
+          "id": true,
+          "instance_id": true,
+          "network_interface_id": true,
+          "private_ip_address": true,
+          "public_ip": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_instance.master",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.medium",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "beta-master",
+            "terraform-kubeadm:cluster": "beta",
+            "terraform-kubeadm:node": "master"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "associate_public_ip_address": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_instance.workers[0]",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "workers",
+      "index": 0,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "associate_public_ip_address": true,
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.small",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "beta-worker-0",
+            "terraform-kubeadm:cluster": "beta",
+            "terraform-kubeadm:node": "worker-0"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_instance.workers[1]",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "workers",
+      "index": 1,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "associate_public_ip_address": true,
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.small",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "beta-worker-1",
+            "terraform-kubeadm:cluster": "beta",
+            "terraform-kubeadm:node": "worker-1"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_key_pair.main",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_key_pair",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "key_name_prefix": "beta-",
+          "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBdDLn5dn58+TXuOYyQUFEoM182DwbRi5mgygYeXuHL+xGEjb2QUdYmyE3Wa6lagw/m+TY5FLrvwiVGQLH4m70vQfxg6G/ghX1QH0s69+1g/zuEJOwJpSo4WIoUT3aD5k2vBQWZTFCefP2M2mstWNE2tmU4oE2Tc3hfoJWGpJ1NO5n+/MavApRuAI3UY6blagKKHKPcLehOcCgVLpd+iJAJS3DeT8VV2jXGGP4VVmZrsTWycd07ujfX0x6PuppZDEybhakuAR6P+t4GHkEUkbK8DsHRzXT9CQ5ebkppTHOAmwqTReZ2jgazp7czi7flmCEep5cAaJS6d/1OQjyQxCb sonarqube@sonarqube.fios-router.home",
+          "tags": {
+            "Environment": "development",
+            "Name": "beta",
+            "terraform-kubeadm:cluster": "beta"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "fingerprint": true,
+          "id": true,
+          "key_name": true,
+          "key_pair_id": true,
+          "tags": {}
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_security_group.egress",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "egress",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow all outgoing traffic to everywhere",
+          "egress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": false,
+              "to_port": 0
+            }
+          ],
+          "name": "beta-egress",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "beta",
+            "terraform-kubeadm:cluster": "beta"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "id": true,
+          "ingress": true,
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_security_group.ingress_internal",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_internal",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow all incoming traffic from nodes and Pods in the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [],
+              "description": "Allow incoming traffic from cluster nodes",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": true,
+              "to_port": 0
+            },
+            {
+              "cidr_blocks": [],
+              "description": "Allow incoming traffic from the Pods of the cluster",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": false,
+              "to_port": 0
+            }
+          ],
+          "name": "beta-ingress-internal",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "beta",
+            "terraform-kubeadm:cluster": "beta"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            },
+            {
+              "cidr_blocks": [],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_security_group.ingress_k8s",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_k8s",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 6443,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 6443
+            }
+          ],
+          "name": "beta-ingress-k8s",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "beta",
+            "terraform-kubeadm:cluster": "beta"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.aws_security_group.ingress_ssh",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_ssh",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow incoming SSH traffic (TCP/22) from outside the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22
+            }
+          ],
+          "name": "beta-ingress-ssh",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "beta",
+            "terraform-kubeadm:cluster": "beta"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.null_resource.download_kubeconfig_file",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "download_kubeconfig_file",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {},
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.null_resource.wait_for_bootstrap_to_finish",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "wait_for_bootstrap_to_finish",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {},
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.random_pet.cluster_name",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "random_pet",
+      "name": "cluster_name",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 2,
+          "prefix": null,
+          "separator": "-"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.random_string.token_id",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "random_string",
+      "name": "token_id",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 6,
+          "lower": true,
+          "min_lower": 0,
+          "min_numeric": 0,
+          "min_special": 0,
+          "min_upper": 0,
+          "number": true,
+          "override_special": null,
+          "special": false,
+          "upper": false
+        },
+        "after_unknown": {
+          "id": true,
+          "result": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_2.random_string.token_secret",
+      "module_address": "module.cluster_2",
+      "mode": "managed",
+      "type": "random_string",
+      "name": "token_secret",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 16,
+          "lower": true,
+          "min_lower": 0,
+          "min_numeric": 0,
+          "min_special": 0,
+          "min_upper": 0,
+          "number": true,
+          "override_special": null,
+          "special": false,
+          "upper": false
+        },
+        "after_unknown": {
+          "id": true,
+          "result": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_eip.master",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_eip",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "associate_with_private_ip": null,
+          "customer_owned_ipv4_pool": null,
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma",
+            "terraform-kubeadm:cluster": "gamma"
+          },
+          "timeouts": null,
+          "vpc": true
+        },
+        "after_unknown": {
+          "allocation_id": true,
+          "association_id": true,
+          "customer_owned_ip": true,
+          "domain": true,
+          "id": true,
+          "instance": true,
+          "network_border_group": true,
+          "network_interface": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "public_ipv4_pool": true,
+          "tags": {}
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_eip_association.master",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_eip_association",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "allow_reassociation": null
+        },
+        "after_unknown": {
+          "allocation_id": true,
+          "id": true,
+          "instance_id": true,
+          "network_interface_id": true,
+          "private_ip_address": true,
+          "public_ip": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_instance.master",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "master",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.medium",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma-master",
+            "terraform-kubeadm:cluster": "gamma",
+            "terraform-kubeadm:node": "master"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "associate_public_ip_address": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_instance.workers[0]",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "workers",
+      "index": 0,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "associate_public_ip_address": true,
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.small",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma-worker-0",
+            "terraform-kubeadm:cluster": "gamma",
+            "terraform-kubeadm:node": "worker-0"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_instance.workers[1]",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "workers",
+      "index": 1,
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-08b277333b9511393",
+          "associate_public_ip_address": true,
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "hibernation": null,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.small",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma-worker-1",
+            "terraform-kubeadm:cluster": "gamma",
+            "terraform-kubeadm:node": "worker-1"
+          },
+          "timeouts": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zone": true,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": [],
+          "ebs_block_device": true,
+          "ephemeral_block_device": true,
+          "host_id": true,
+          "id": true,
+          "instance_state": true,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "metadata_options": true,
+          "network_interface": true,
+          "outpost_arn": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "secondary_private_ips": true,
+          "security_groups": true,
+          "subnet_id": true,
+          "tags": {},
+          "tenancy": true,
+          "user_data": true,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_key_pair.main",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_key_pair",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "key_name_prefix": "gamma-",
+          "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBdDLn5dn58+TXuOYyQUFEoM182DwbRi5mgygYeXuHL+xGEjb2QUdYmyE3Wa6lagw/m+TY5FLrvwiVGQLH4m70vQfxg6G/ghX1QH0s69+1g/zuEJOwJpSo4WIoUT3aD5k2vBQWZTFCefP2M2mstWNE2tmU4oE2Tc3hfoJWGpJ1NO5n+/MavApRuAI3UY6blagKKHKPcLehOcCgVLpd+iJAJS3DeT8VV2jXGGP4VVmZrsTWycd07ujfX0x6PuppZDEybhakuAR6P+t4GHkEUkbK8DsHRzXT9CQ5ebkppTHOAmwqTReZ2jgazp7czi7flmCEep5cAaJS6d/1OQjyQxCb sonarqube@sonarqube.fios-router.home",
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma",
+            "terraform-kubeadm:cluster": "gamma"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "fingerprint": true,
+          "id": true,
+          "key_name": true,
+          "key_pair_id": true,
+          "tags": {}
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_security_group.egress",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "egress",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow all outgoing traffic to everywhere",
+          "egress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": false,
+              "to_port": 0
+            }
+          ],
+          "name": "gamma-egress",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma",
+            "terraform-kubeadm:cluster": "gamma"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "id": true,
+          "ingress": true,
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_security_group.ingress_internal",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_internal",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow all incoming traffic from nodes and Pods in the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [],
+              "description": "Allow incoming traffic from cluster nodes",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": true,
+              "to_port": 0
+            },
+            {
+              "cidr_blocks": [],
+              "description": "Allow incoming traffic from the Pods of the cluster",
+              "from_port": 0,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "-1",
+              "security_groups": [],
+              "self": false,
+              "to_port": 0
+            }
+          ],
+          "name": "gamma-ingress-internal",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma",
+            "terraform-kubeadm:cluster": "gamma"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            },
+            {
+              "cidr_blocks": [],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_security_group.ingress_k8s",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_k8s",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 6443,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 6443
+            }
+          ],
+          "name": "gamma-ingress-k8s",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma",
+            "terraform-kubeadm:cluster": "gamma"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.aws_security_group.ingress_ssh",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "ingress_ssh",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "Allow incoming SSH traffic (TCP/22) from outside the cluster",
+          "ingress": [
+            {
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "",
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "security_groups": [],
+              "self": false,
+              "to_port": 22
+            }
+          ],
+          "name": "gamma-ingress-ssh",
+          "name_prefix": null,
+          "revoke_rules_on_delete": false,
+          "tags": {
+            "Environment": "development",
+            "Name": "gamma",
+            "terraform-kubeadm:cluster": "gamma"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "egress": true,
+          "id": true,
+          "ingress": [
+            {
+              "cidr_blocks": [
+                false
+              ],
+              "ipv6_cidr_blocks": [],
+              "prefix_list_ids": [],
+              "security_groups": []
+            }
+          ],
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.null_resource.download_kubeconfig_file",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "download_kubeconfig_file",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {},
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.null_resource.wait_for_bootstrap_to_finish",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "wait_for_bootstrap_to_finish",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {},
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.random_pet.cluster_name",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "random_pet",
+      "name": "cluster_name",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 2,
+          "prefix": null,
+          "separator": "-"
+        },
+        "after_unknown": {
+          "id": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.random_string.token_id",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "random_string",
+      "name": "token_id",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 6,
+          "lower": true,
+          "min_lower": 0,
+          "min_numeric": 0,
+          "min_special": 0,
+          "min_upper": 0,
+          "number": true,
+          "override_special": null,
+          "special": false,
+          "upper": false
+        },
+        "after_unknown": {
+          "id": true,
+          "result": true
+        }
+      }
+    },
+    {
+      "address": "module.cluster_3.random_string.token_secret",
+      "module_address": "module.cluster_3",
+      "mode": "managed",
+      "type": "random_string",
+      "name": "token_secret",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "keepers": null,
+          "length": 16,
+          "lower": true,
+          "min_lower": 0,
+          "min_numeric": 0,
+          "min_special": 0,
+          "min_upper": 0,
+          "number": true,
+          "override_special": null,
+          "special": false,
+          "upper": false
+        },
+        "after_unknown": {
+          "id": true,
+          "result": true
+        }
+      }
+    },
+    {
+      "address": "module.network.aws_internet_gateway.main",
+      "module_address": "module.network",
+      "mode": "managed",
+      "type": "aws_internet_gateway",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "tags": {
+            "Environment": "development",
+            "Name": "terraform-kubeadm"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.network.aws_route_table.main",
+      "module_address": "module.network",
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "route": [
+            {
+              "cidr_block": "0.0.0.0/0",
+              "egress_only_gateway_id": "",
+              "instance_id": "",
+              "ipv6_cidr_block": "",
+              "local_gateway_id": "",
+              "nat_gateway_id": "",
+              "network_interface_id": "",
+              "transit_gateway_id": "",
+              "vpc_peering_connection_id": ""
+            }
+          ],
+          "tags": {
+            "Environment": "development",
+            "Name": "terraform-kubeadm"
+          }
+        },
+        "after_unknown": {
+          "id": true,
+          "owner_id": true,
+          "propagating_vgws": true,
+          "route": [
+            {
+              "gateway_id": true
+            }
+          ],
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.network.aws_route_table_association.main",
+      "module_address": "module.network",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "gateway_id": null
+        },
+        "after_unknown": {
+          "id": true,
+          "route_table_id": true,
+          "subnet_id": true
+        }
+      }
+    },
+    {
+      "address": "module.network.aws_subnet.main",
+      "module_address": "module.network",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "assign_ipv6_address_on_creation": false,
+          "cidr_block": "172.31.0.0/16",
+          "ipv6_cidr_block": null,
+          "map_public_ip_on_launch": false,
+          "outpost_arn": null,
+          "tags": {
+            "Environment": "development",
+            "Name": "terraform-kubeadm"
+          },
+          "timeouts": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zone": true,
+          "availability_zone_id": true,
+          "id": true,
+          "ipv6_cidr_block_association_id": true,
+          "owner_id": true,
+          "tags": {},
+          "vpc_id": true
+        }
+      }
+    },
+    {
+      "address": "module.network.aws_vpc.main",
+      "module_address": "module.network",
+      "mode": "managed",
+      "type": "aws_vpc",
+      "name": "main",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "assign_generated_ipv6_cidr_block": false,
+          "cidr_block": "172.31.0.0/16",
+          "enable_dns_support": true,
+          "instance_tenancy": "default",
+          "tags": {
+            "Environment": "development",
+            "Name": "terraform-kubeadm"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "default_network_acl_id": true,
+          "default_route_table_id": true,
+          "default_security_group_id": true,
+          "dhcp_options_id": true,
+          "enable_classiclink": true,
+          "enable_classiclink_dns_support": true,
+          "enable_dns_hostnames": true,
+          "id": true,
+          "ipv6_association_id": true,
+          "ipv6_cidr_block": true,
+          "main_route_table_id": true,
+          "owner_id": true,
+          "tags": {}
+        }
+      }
+    }
+  ],
+  "output_changes": {
+    "cluster_names": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": [
+        "alpha",
+        "beta",
+        "gamma"
+      ],
+      "after_unknown": false
+    },
+    "cluster_nodes": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after_unknown": true
+    },
+    "kubeconfigs": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": {
+        "alpha": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/alpha.conf",
+        "beta": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/beta.conf",
+        "gamma": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/gamma.conf"
+      },
+      "after_unknown": false
+    }
+  },
+  "prior_state": {
+    "format_version": "0.1",
+    "terraform_version": "0.13.5",
+    "values": {
+      "outputs": {
+        "cluster_names": {
+          "sensitive": false,
+          "value": [
+            "alpha",
+            "beta",
+            "gamma"
+          ]
+        },
+        "cluster_nodes": {
+          "sensitive": false,
+          "value": {
+            "alpha": null,
+            "beta": null,
+            "gamma": null
+          }
+        },
+        "kubeconfigs": {
+          "sensitive": false,
+          "value": {
+            "alpha": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/alpha.conf",
+            "beta": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/beta.conf",
+            "gamma": "/Users/sonarqube/IdeaProjects/terraform-aws-kubeadm/examples/ex4-multiple-clusters/gamma.conf"
+          }
+        }
+      },
+      "root_module": {
+        "child_modules": [
+          {
+            "resources": [
+              {
+                "address": "module.cluster_1.data.aws_ami.ubuntu",
+                "mode": "data",
+                "type": "aws_ami",
+                "name": "ubuntu",
+                "provider_name": "registry.terraform.io/hashicorp/aws",
+                "schema_version": 0,
+                "values": {
+                  "architecture": "x86_64",
+                  "arn": "arn:aws:ec2:us-east-1::image/ami-08b277333b9511393",
+                  "block_device_mappings": [
+                    {
+                      "device_name": "/dev/sda1",
+                      "ebs": {
+                        "delete_on_termination": "true",
+                        "encrypted": "false",
+                        "iops": "0",
+                        "snapshot_id": "snap-05d81a0697bbf5775",
+                        "volume_size": "8",
+                        "volume_type": "gp2"
+                      },
+                      "no_device": "",
+                      "virtual_name": ""
+                    },
+                    {
+                      "device_name": "/dev/sdb",
+                      "ebs": {},
+                      "no_device": "",
+                      "virtual_name": "ephemeral0"
+                    },
+                    {
+                      "device_name": "/dev/sdc",
+                      "ebs": {},
+                      "no_device": "",
+                      "virtual_name": "ephemeral1"
+                    }
+                  ],
+                  "creation_date": "2020-11-12T19:59:35.000Z",
+                  "description": "Canonical, Ubuntu, 18.04 LTS, amd64 bionic image build on 2020-11-12",
+                  "executable_users": null,
+                  "filter": [
+                    {
+                      "name": "name",
+                      "values": [
+                        "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+                      ]
+                    }
+                  ],
+                  "hypervisor": "xen",
+                  "id": "ami-08b277333b9511393",
+                  "image_id": "ami-08b277333b9511393",
+                  "image_location": "099720109477/ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20201112",
+                  "image_owner_alias": null,
+                  "image_type": "machine",
+                  "kernel_id": null,
+                  "most_recent": true,
+                  "name": "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20201112",
+                  "name_regex": null,
+                  "owner_id": "099720109477",
+                  "owners": [
+                    "099720109477"
+                  ],
+                  "platform": null,
+                  "product_codes": [],
+                  "public": true,
+                  "ramdisk_id": null,
+                  "root_device_name": "/dev/sda1",
+                  "root_device_type": "ebs",
+                  "root_snapshot_id": "snap-05d81a0697bbf5775",
+                  "sriov_net_support": "simple",
+                  "state": "available",
+                  "state_reason": {
+                    "code": "UNSET",
+                    "message": "UNSET"
+                  },
+                  "tags": {},
+                  "virtualization_type": "hvm"
+                }
+              }
+            ],
+            "address": "module.cluster_1"
+          },
+          {
+            "resources": [
+              {
+                "address": "module.cluster_2.data.aws_ami.ubuntu",
+                "mode": "data",
+                "type": "aws_ami",
+                "name": "ubuntu",
+                "provider_name": "registry.terraform.io/hashicorp/aws",
+                "schema_version": 0,
+                "values": {
+                  "architecture": "x86_64",
+                  "arn": "arn:aws:ec2:us-east-1::image/ami-08b277333b9511393",
+                  "block_device_mappings": [
+                    {
+                      "device_name": "/dev/sda1",
+                      "ebs": {
+                        "delete_on_termination": "true",
+                        "encrypted": "false",
+                        "iops": "0",
+                        "snapshot_id": "snap-05d81a0697bbf5775",
+                        "volume_size": "8",
+                        "volume_type": "gp2"
+                      },
+                      "no_device": "",
+                      "virtual_name": ""
+                    },
+                    {
+                      "device_name": "/dev/sdb",
+                      "ebs": {},
+                      "no_device": "",
+                      "virtual_name": "ephemeral0"
+                    },
+                    {
+                      "device_name": "/dev/sdc",
+                      "ebs": {},
+                      "no_device": "",
+                      "virtual_name": "ephemeral1"
+                    }
+                  ],
+                  "creation_date": "2020-11-12T19:59:35.000Z",
+                  "description": "Canonical, Ubuntu, 18.04 LTS, amd64 bionic image build on 2020-11-12",
+                  "executable_users": null,
+                  "filter": [
+                    {
+                      "name": "name",
+                      "values": [
+                        "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+                      ]
+                    }
+                  ],
+                  "hypervisor": "xen",
+                  "id": "ami-08b277333b9511393",
+                  "image_id": "ami-08b277333b9511393",
+                  "image_location": "099720109477/ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20201112",
+                  "image_owner_alias": null,
+                  "image_type": "machine",
+                  "kernel_id": null,
+                  "most_recent": true,
+                  "name": "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20201112",
+                  "name_regex": null,
+                  "owner_id": "099720109477",
+                  "owners": [
+                    "099720109477"
+                  ],
+                  "platform": null,
+                  "product_codes": [],
+                  "public": true,
+                  "ramdisk_id": null,
+                  "root_device_name": "/dev/sda1",
+                  "root_device_type": "ebs",
+                  "root_snapshot_id": "snap-05d81a0697bbf5775",
+                  "sriov_net_support": "simple",
+                  "state": "available",
+                  "state_reason": {
+                    "code": "UNSET",
+                    "message": "UNSET"
+                  },
+                  "tags": {},
+                  "virtualization_type": "hvm"
+                }
+              }
+            ],
+            "address": "module.cluster_2"
+          },
+          {
+            "resources": [
+              {
+                "address": "module.cluster_3.data.aws_ami.ubuntu",
+                "mode": "data",
+                "type": "aws_ami",
+                "name": "ubuntu",
+                "provider_name": "registry.terraform.io/hashicorp/aws",
+                "schema_version": 0,
+                "values": {
+                  "architecture": "x86_64",
+                  "arn": "arn:aws:ec2:us-east-1::image/ami-08b277333b9511393",
+                  "block_device_mappings": [
+                    {
+                      "device_name": "/dev/sda1",
+                      "ebs": {
+                        "delete_on_termination": "true",
+                        "encrypted": "false",
+                        "iops": "0",
+                        "snapshot_id": "snap-05d81a0697bbf5775",
+                        "volume_size": "8",
+                        "volume_type": "gp2"
+                      },
+                      "no_device": "",
+                      "virtual_name": ""
+                    },
+                    {
+                      "device_name": "/dev/sdb",
+                      "ebs": {},
+                      "no_device": "",
+                      "virtual_name": "ephemeral0"
+                    },
+                    {
+                      "device_name": "/dev/sdc",
+                      "ebs": {},
+                      "no_device": "",
+                      "virtual_name": "ephemeral1"
+                    }
+                  ],
+                  "creation_date": "2020-11-12T19:59:35.000Z",
+                  "description": "Canonical, Ubuntu, 18.04 LTS, amd64 bionic image build on 2020-11-12",
+                  "executable_users": null,
+                  "filter": [
+                    {
+                      "name": "name",
+                      "values": [
+                        "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+                      ]
+                    }
+                  ],
+                  "hypervisor": "xen",
+                  "id": "ami-08b277333b9511393",
+                  "image_id": "ami-08b277333b9511393",
+                  "image_location": "099720109477/ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20201112",
+                  "image_owner_alias": null,
+                  "image_type": "machine",
+                  "kernel_id": null,
+                  "most_recent": true,
+                  "name": "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20201112",
+                  "name_regex": null,
+                  "owner_id": "099720109477",
+                  "owners": [
+                    "099720109477"
+                  ],
+                  "platform": null,
+                  "product_codes": [],
+                  "public": true,
+                  "ramdisk_id": null,
+                  "root_device_name": "/dev/sda1",
+                  "root_device_type": "ebs",
+                  "root_snapshot_id": "snap-05d81a0697bbf5775",
+                  "sriov_net_support": "simple",
+                  "state": "available",
+                  "state_reason": {
+                    "code": "UNSET",
+                    "message": "UNSET"
+                  },
+                  "tags": {},
+                  "virtualization_type": "hvm"
+                }
+              }
+            ],
+            "address": "module.cluster_3"
+          }
+        ]
+      }
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "expressions": {
+          "region": {
+            "references": [
+              "var.region"
+            ]
+          }
+        }
+      }
+    },
+    "root_module": {
+      "outputs": {
+        "cluster_names": {
+          "expression": {
+            "references": [
+              "module.cluster_1",
+              "module.cluster_2",
+              "module.cluster_3"
+            ]
+          },
+          "description": "Names of the created clusters."
+        },
+        "cluster_nodes": {
+          "expression": {
+            "references": [
+              "module.cluster_1",
+              "module.cluster_2",
+              "module.cluster_3"
+            ]
+          },
+          "description": "Details about the nodes of the created clusters."
+        },
+        "kubeconfigs": {
+          "expression": {
+            "references": [
+              "module.cluster_1",
+              "module.cluster_2",
+              "module.cluster_3"
+            ]
+          },
+          "description": "Locations of the kubeconfig files of the created clusters."
+        }
+      },
+      "module_calls": {
+        "cluster_1": {
+          "source": "../..",
+          "expressions": {
+            "cluster_name": {
+              "references": [
+                "var.cluster_names"
+              ]
+            },
+            "subnet_id": {
+              "references": [
+                "module.network.subnet_id"
+              ]
+            },
+            "tags": {
+              "references": [
+                "local.additional_tags",
+                "var.cluster_names"
+              ]
+            },
+            "vpc_id": {
+              "references": [
+                "module.network.vpc_id"
+              ]
+            }
+          },
+          "module": {
+            "outputs": {
+              "cluster_name": {
+                "expression": {
+                  "references": [
+                    "local.cluster_name"
+                  ]
+                },
+                "description": "Name of the created cluster. This name is used as the value of the \"terraform-kubeadm:cluster\" tag assigned to all created AWS resources."
+              },
+              "cluster_nodes": {
+                "expression": {
+                  "references": [
+                    "aws_instance.master",
+                    "aws_instance.workers",
+                    "aws_eip.master"
+                  ]
+                },
+                "description": "Name, public and private IP address, and subnet ID of all nodes of the created cluster."
+              },
+              "kubeconfig": {
+                "expression": {
+                  "references": [
+                    "local.kubeconfig_file"
+                  ]
+                },
+                "description": "Location of the kubeconfig file for the created cluster on the local machine."
+              },
+              "vpc_id": {
+                "expression": {
+                  "references": [
+                    "aws_security_group.egress"
+                  ]
+                },
+                "description": "ID of the VPC in which the cluster has been created."
+              }
+            },
+            "resources": [
+              {
+                "address": "aws_eip.master",
+                "mode": "managed",
+                "type": "aws_eip",
+                "name": "master",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc": {
+                    "constant_value": true
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_eip_association.master",
+                "mode": "managed",
+                "type": "aws_eip_association",
+                "name": "master",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "allocation_id": {
+                    "references": [
+                      "aws_eip.master"
+                    ]
+                  },
+                  "instance_id": {
+                    "references": [
+                      "aws_instance.master"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_instance.master",
+                "mode": "managed",
+                "type": "aws_instance",
+                "name": "master",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "ami": {
+                    "references": [
+                      "data.aws_ami.ubuntu"
+                    ]
+                  },
+                  "instance_type": {
+                    "references": [
+                      "var.master_instance_type"
+                    ]
+                  },
+                  "key_name": {
+                    "references": [
+                      "aws_key_pair.main"
+                    ]
+                  },
+                  "subnet_id": {
+                    "references": [
+                      "var.subnet_id"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags",
+                      "local.cluster_name"
+                    ]
+                  },
+                  "user_data": {
+                    "references": [
+                      "local.token",
+                      "aws_eip.master",
+                      "var.pod_network_cidr_block",
+                      "var.pod_network_cidr_block",
+                      "aws_eip.master"
+                    ]
+                  },
+                  "vpc_security_group_ids": {
+                    "references": [
+                      "aws_security_group.egress",
+                      "aws_security_group.ingress_internal",
+                      "aws_security_group.ingress_k8s",
+                      "aws_security_group.ingress_ssh"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_instance.workers",
+                "mode": "managed",
+                "type": "aws_instance",
+                "name": "workers",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "ami": {
+                    "references": [
+                      "data.aws_ami.ubuntu"
+                    ]
+                  },
+                  "associate_public_ip_address": {
+                    "constant_value": true
+                  },
+                  "instance_type": {
+                    "references": [
+                      "var.worker_instance_type"
+                    ]
+                  },
+                  "key_name": {
+                    "references": [
+                      "aws_key_pair.main"
+                    ]
+                  },
+                  "subnet_id": {
+                    "references": [
+                      "var.subnet_id"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags",
+                      "count.index",
+                      "local.cluster_name",
+                      "count.index"
+                    ]
+                  },
+                  "user_data": {
+                    "references": [
+                      "aws_instance.master",
+                      "local.token",
+                      "count.index"
+                    ]
+                  },
+                  "vpc_security_group_ids": {
+                    "references": [
+                      "aws_security_group.egress",
+                      "aws_security_group.ingress_internal",
+                      "aws_security_group.ingress_ssh"
+                    ]
+                  }
+                },
+                "schema_version": 1,
+                "count_expression": {
+                  "references": [
+                    "var.num_workers"
+                  ]
+                }
+              },
+              {
+                "address": "aws_key_pair.main",
+                "mode": "managed",
+                "type": "aws_key_pair",
+                "name": "main",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "key_name_prefix": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "public_key": {
+                    "references": [
+                      "var.public_key_file"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.egress",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "egress",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow all outgoing traffic to everywhere"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_internal",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_internal",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow all incoming traffic from nodes and Pods in the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_k8s",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_k8s",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_ssh",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_ssh",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow incoming SSH traffic (TCP/22) from outside the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "null_resource.download_kubeconfig_file",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "download_kubeconfig_file",
+                "provider_config_key": "cluster_1:null",
+                "provisioners": [
+                  {
+                    "type": "local-exec",
+                    "expressions": {
+                      "command": {
+                        "references": [
+                          "var.private_key_file",
+                          "aws_eip.master",
+                          "local.kubeconfig_file"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expressions": {
+                  "triggers": {
+                    "references": [
+                      "null_resource.wait_for_bootstrap_to_finish"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "null_resource.wait_for_bootstrap_to_finish",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "wait_for_bootstrap_to_finish",
+                "provider_config_key": "cluster_1:null",
+                "provisioners": [
+                  {
+                    "type": "local-exec",
+                    "expressions": {
+                      "command": {
+                        "references": [
+                          "var.private_key_file",
+                          "aws_eip.master",
+                          "aws_instance.workers"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expressions": {
+                  "triggers": {
+                    "references": [
+                      "aws_instance.master",
+                      "aws_instance.workers"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "random_pet.cluster_name",
+                "mode": "managed",
+                "type": "random_pet",
+                "name": "cluster_name",
+                "provider_config_key": "cluster_1:random",
+                "schema_version": 0
+              },
+              {
+                "address": "random_string.token_id",
+                "mode": "managed",
+                "type": "random_string",
+                "name": "token_id",
+                "provider_config_key": "cluster_1:random",
+                "expressions": {
+                  "length": {
+                    "constant_value": 6
+                  },
+                  "special": {
+                    "constant_value": false
+                  },
+                  "upper": {
+                    "constant_value": false
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "random_string.token_secret",
+                "mode": "managed",
+                "type": "random_string",
+                "name": "token_secret",
+                "provider_config_key": "cluster_1:random",
+                "expressions": {
+                  "length": {
+                    "constant_value": 16
+                  },
+                  "special": {
+                    "constant_value": false
+                  },
+                  "upper": {
+                    "constant_value": false
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "data.aws_ami.ubuntu",
+                "mode": "data",
+                "type": "aws_ami",
+                "name": "ubuntu",
+                "provider_config_key": "cluster_1:aws",
+                "expressions": {
+                  "filter": [
+                    {
+                      "name": {
+                        "constant_value": "name"
+                      },
+                      "values": {
+                        "constant_value": [
+                          "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+                        ]
+                      }
+                    }
+                  ],
+                  "most_recent": {
+                    "constant_value": true
+                  },
+                  "owners": {
+                    "constant_value": [
+                      "099720109477"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              }
+            ],
+            "variables": {
+              "allowed_k8s_cidr_blocks": {
+                "default": [
+                  "0.0.0.0/0"
+                ],
+                "description": "List of CIDR blocks from which it is allowed to make Kubernetes API request to the API server of the cluster. By default, Kubernetes API requests are allowed from everywhere. Note that Kubernetes API requests from Pods and nodes inside the cluster are always allowed, regardless of the value of this variable."
+              },
+              "allowed_ssh_cidr_blocks": {
+                "default": [
+                  "0.0.0.0/0"
+                ],
+                "description": "List of CIDR blocks from which it is allowed to make SSH connections to the EC2 instances that form the cluster nodes. By default, SSH connections are allowed from everywhere."
+              },
+              "cluster_name": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. Name for the Kubernetes cluster. This name will be used as the value for the \"terraform-kubeadm:cluster\" tag that is assigned to all created AWS resources. If null, a random name is automatically chosen."
+              },
+              "kubeconfig_dir": {
+                "default": ".",
+                "description": "Directory on the local machine in which to save the kubeconfig file of the created cluster. The basename of the kubeconfig file will consist of the cluster name followed by \".conf\", for example, \"my-cluster.conf\". The directory may be specified as an absolute or relative path. The directory must exist, otherwise an error occurs. By default, the current working directory is used."
+              },
+              "kubeconfig_file": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. The exact filename as which to save the kubeconfig file of the crated cluster on the local machine. The filename may be specified as an absolute or relative path. The parent directory of the filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, the value of the \"kubeconfig_dir\" variable is ignored."
+              },
+              "master_instance_type": {
+                "default": "t2.medium",
+                "description": "EC2 instance type for the master node (must have at least 2 CPUs)."
+              },
+              "num_workers": {
+                "default": 2,
+                "description": "Number of worker nodes."
+              },
+              "pod_network_cidr_block": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (i.e. sets the \".spec.podCIDR\" field of the node objects). If null, the cluster is created without an explicitly determined Pod network IP address range, and the nodes are not allocated any Pod subnet IP address ranges (i.e. the \".spec.podCIDR\" field of the nodes is not set)."
+              },
+              "private_key_file": {
+                "default": "~/.ssh/id_rsa",
+                "description": "Filename of the private key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
+              },
+              "public_key_file": {
+                "default": "~/.ssh/id_rsa.pub",
+                "description": "Filename of the public key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
+              },
+              "subnet_id": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. ID of the AWS subnet in which to create the cluster. If null, one of the default subnets in the default VPC is used. The subnet must be in the VPC specified by the \"vpc_id\" variable, otherwise an error occurs."
+              },
+              "tags": {
+                "default": {},
+                "description": "A set of tags to assign to the created AWS resources. These tags will be assigned in addition to the default tags. The default tags include \"terraform-kubeadm:cluster\" which is assigned to all resources and whose value is the cluster name, and \"terraform-kubeadm:node\" which is assigned to the EC2 instances and whose value is the name of the Kubernetes node that this EC2 corresponds to."
+              },
+              "vpc_id": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. ID of the AWS VPC in which to create the cluster. If null, the default VPC is used."
+              },
+              "worker_instance_type": {
+                "default": "t2.small",
+                "description": "EC2 instance type for the worker nodes."
+              }
+            }
+          }
+        },
+        "cluster_2": {
+          "source": "../..",
+          "expressions": {
+            "cluster_name": {
+              "references": [
+                "var.cluster_names"
+              ]
+            },
+            "subnet_id": {
+              "references": [
+                "module.network.subnet_id"
+              ]
+            },
+            "tags": {
+              "references": [
+                "local.additional_tags",
+                "var.cluster_names"
+              ]
+            },
+            "vpc_id": {
+              "references": [
+                "module.network.vpc_id"
+              ]
+            }
+          },
+          "module": {
+            "outputs": {
+              "cluster_name": {
+                "expression": {
+                  "references": [
+                    "local.cluster_name"
+                  ]
+                },
+                "description": "Name of the created cluster. This name is used as the value of the \"terraform-kubeadm:cluster\" tag assigned to all created AWS resources."
+              },
+              "cluster_nodes": {
+                "expression": {
+                  "references": [
+                    "aws_instance.master",
+                    "aws_instance.workers",
+                    "aws_eip.master"
+                  ]
+                },
+                "description": "Name, public and private IP address, and subnet ID of all nodes of the created cluster."
+              },
+              "kubeconfig": {
+                "expression": {
+                  "references": [
+                    "local.kubeconfig_file"
+                  ]
+                },
+                "description": "Location of the kubeconfig file for the created cluster on the local machine."
+              },
+              "vpc_id": {
+                "expression": {
+                  "references": [
+                    "aws_security_group.egress"
+                  ]
+                },
+                "description": "ID of the VPC in which the cluster has been created."
+              }
+            },
+            "resources": [
+              {
+                "address": "aws_eip.master",
+                "mode": "managed",
+                "type": "aws_eip",
+                "name": "master",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc": {
+                    "constant_value": true
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_eip_association.master",
+                "mode": "managed",
+                "type": "aws_eip_association",
+                "name": "master",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "allocation_id": {
+                    "references": [
+                      "aws_eip.master"
+                    ]
+                  },
+                  "instance_id": {
+                    "references": [
+                      "aws_instance.master"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_instance.master",
+                "mode": "managed",
+                "type": "aws_instance",
+                "name": "master",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "ami": {
+                    "references": [
+                      "data.aws_ami.ubuntu"
+                    ]
+                  },
+                  "instance_type": {
+                    "references": [
+                      "var.master_instance_type"
+                    ]
+                  },
+                  "key_name": {
+                    "references": [
+                      "aws_key_pair.main"
+                    ]
+                  },
+                  "subnet_id": {
+                    "references": [
+                      "var.subnet_id"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags",
+                      "local.cluster_name"
+                    ]
+                  },
+                  "user_data": {
+                    "references": [
+                      "local.token",
+                      "aws_eip.master",
+                      "var.pod_network_cidr_block",
+                      "var.pod_network_cidr_block",
+                      "aws_eip.master"
+                    ]
+                  },
+                  "vpc_security_group_ids": {
+                    "references": [
+                      "aws_security_group.egress",
+                      "aws_security_group.ingress_internal",
+                      "aws_security_group.ingress_k8s",
+                      "aws_security_group.ingress_ssh"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_instance.workers",
+                "mode": "managed",
+                "type": "aws_instance",
+                "name": "workers",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "ami": {
+                    "references": [
+                      "data.aws_ami.ubuntu"
+                    ]
+                  },
+                  "associate_public_ip_address": {
+                    "constant_value": true
+                  },
+                  "instance_type": {
+                    "references": [
+                      "var.worker_instance_type"
+                    ]
+                  },
+                  "key_name": {
+                    "references": [
+                      "aws_key_pair.main"
+                    ]
+                  },
+                  "subnet_id": {
+                    "references": [
+                      "var.subnet_id"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags",
+                      "count.index",
+                      "local.cluster_name",
+                      "count.index"
+                    ]
+                  },
+                  "user_data": {
+                    "references": [
+                      "aws_instance.master",
+                      "local.token",
+                      "count.index"
+                    ]
+                  },
+                  "vpc_security_group_ids": {
+                    "references": [
+                      "aws_security_group.egress",
+                      "aws_security_group.ingress_internal",
+                      "aws_security_group.ingress_ssh"
+                    ]
+                  }
+                },
+                "schema_version": 1,
+                "count_expression": {
+                  "references": [
+                    "var.num_workers"
+                  ]
+                }
+              },
+              {
+                "address": "aws_key_pair.main",
+                "mode": "managed",
+                "type": "aws_key_pair",
+                "name": "main",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "key_name_prefix": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "public_key": {
+                    "references": [
+                      "var.public_key_file"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.egress",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "egress",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow all outgoing traffic to everywhere"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_internal",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_internal",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow all incoming traffic from nodes and Pods in the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_k8s",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_k8s",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_ssh",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_ssh",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow incoming SSH traffic (TCP/22) from outside the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "null_resource.download_kubeconfig_file",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "download_kubeconfig_file",
+                "provider_config_key": "cluster_2:null",
+                "provisioners": [
+                  {
+                    "type": "local-exec",
+                    "expressions": {
+                      "command": {
+                        "references": [
+                          "var.private_key_file",
+                          "aws_eip.master",
+                          "local.kubeconfig_file"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expressions": {
+                  "triggers": {
+                    "references": [
+                      "null_resource.wait_for_bootstrap_to_finish"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "null_resource.wait_for_bootstrap_to_finish",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "wait_for_bootstrap_to_finish",
+                "provider_config_key": "cluster_2:null",
+                "provisioners": [
+                  {
+                    "type": "local-exec",
+                    "expressions": {
+                      "command": {
+                        "references": [
+                          "var.private_key_file",
+                          "aws_eip.master",
+                          "aws_instance.workers"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expressions": {
+                  "triggers": {
+                    "references": [
+                      "aws_instance.master",
+                      "aws_instance.workers"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "random_pet.cluster_name",
+                "mode": "managed",
+                "type": "random_pet",
+                "name": "cluster_name",
+                "provider_config_key": "cluster_2:random",
+                "schema_version": 0
+              },
+              {
+                "address": "random_string.token_id",
+                "mode": "managed",
+                "type": "random_string",
+                "name": "token_id",
+                "provider_config_key": "cluster_2:random",
+                "expressions": {
+                  "length": {
+                    "constant_value": 6
+                  },
+                  "special": {
+                    "constant_value": false
+                  },
+                  "upper": {
+                    "constant_value": false
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "random_string.token_secret",
+                "mode": "managed",
+                "type": "random_string",
+                "name": "token_secret",
+                "provider_config_key": "cluster_2:random",
+                "expressions": {
+                  "length": {
+                    "constant_value": 16
+                  },
+                  "special": {
+                    "constant_value": false
+                  },
+                  "upper": {
+                    "constant_value": false
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "data.aws_ami.ubuntu",
+                "mode": "data",
+                "type": "aws_ami",
+                "name": "ubuntu",
+                "provider_config_key": "cluster_2:aws",
+                "expressions": {
+                  "filter": [
+                    {
+                      "name": {
+                        "constant_value": "name"
+                      },
+                      "values": {
+                        "constant_value": [
+                          "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+                        ]
+                      }
+                    }
+                  ],
+                  "most_recent": {
+                    "constant_value": true
+                  },
+                  "owners": {
+                    "constant_value": [
+                      "099720109477"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              }
+            ],
+            "variables": {
+              "allowed_k8s_cidr_blocks": {
+                "default": [
+                  "0.0.0.0/0"
+                ],
+                "description": "List of CIDR blocks from which it is allowed to make Kubernetes API request to the API server of the cluster. By default, Kubernetes API requests are allowed from everywhere. Note that Kubernetes API requests from Pods and nodes inside the cluster are always allowed, regardless of the value of this variable."
+              },
+              "allowed_ssh_cidr_blocks": {
+                "default": [
+                  "0.0.0.0/0"
+                ],
+                "description": "List of CIDR blocks from which it is allowed to make SSH connections to the EC2 instances that form the cluster nodes. By default, SSH connections are allowed from everywhere."
+              },
+              "cluster_name": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. Name for the Kubernetes cluster. This name will be used as the value for the \"terraform-kubeadm:cluster\" tag that is assigned to all created AWS resources. If null, a random name is automatically chosen."
+              },
+              "kubeconfig_dir": {
+                "default": ".",
+                "description": "Directory on the local machine in which to save the kubeconfig file of the created cluster. The basename of the kubeconfig file will consist of the cluster name followed by \".conf\", for example, \"my-cluster.conf\". The directory may be specified as an absolute or relative path. The directory must exist, otherwise an error occurs. By default, the current working directory is used."
+              },
+              "kubeconfig_file": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. The exact filename as which to save the kubeconfig file of the crated cluster on the local machine. The filename may be specified as an absolute or relative path. The parent directory of the filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, the value of the \"kubeconfig_dir\" variable is ignored."
+              },
+              "master_instance_type": {
+                "default": "t2.medium",
+                "description": "EC2 instance type for the master node (must have at least 2 CPUs)."
+              },
+              "num_workers": {
+                "default": 2,
+                "description": "Number of worker nodes."
+              },
+              "pod_network_cidr_block": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (i.e. sets the \".spec.podCIDR\" field of the node objects). If null, the cluster is created without an explicitly determined Pod network IP address range, and the nodes are not allocated any Pod subnet IP address ranges (i.e. the \".spec.podCIDR\" field of the nodes is not set)."
+              },
+              "private_key_file": {
+                "default": "~/.ssh/id_rsa",
+                "description": "Filename of the private key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
+              },
+              "public_key_file": {
+                "default": "~/.ssh/id_rsa.pub",
+                "description": "Filename of the public key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
+              },
+              "subnet_id": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. ID of the AWS subnet in which to create the cluster. If null, one of the default subnets in the default VPC is used. The subnet must be in the VPC specified by the \"vpc_id\" variable, otherwise an error occurs."
+              },
+              "tags": {
+                "default": {},
+                "description": "A set of tags to assign to the created AWS resources. These tags will be assigned in addition to the default tags. The default tags include \"terraform-kubeadm:cluster\" which is assigned to all resources and whose value is the cluster name, and \"terraform-kubeadm:node\" which is assigned to the EC2 instances and whose value is the name of the Kubernetes node that this EC2 corresponds to."
+              },
+              "vpc_id": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. ID of the AWS VPC in which to create the cluster. If null, the default VPC is used."
+              },
+              "worker_instance_type": {
+                "default": "t2.small",
+                "description": "EC2 instance type for the worker nodes."
+              }
+            }
+          }
+        },
+        "cluster_3": {
+          "source": "../..",
+          "expressions": {
+            "cluster_name": {
+              "references": [
+                "var.cluster_names"
+              ]
+            },
+            "subnet_id": {
+              "references": [
+                "module.network.subnet_id"
+              ]
+            },
+            "tags": {
+              "references": [
+                "local.additional_tags",
+                "var.cluster_names"
+              ]
+            },
+            "vpc_id": {
+              "references": [
+                "module.network.vpc_id"
+              ]
+            }
+          },
+          "module": {
+            "outputs": {
+              "cluster_name": {
+                "expression": {
+                  "references": [
+                    "local.cluster_name"
+                  ]
+                },
+                "description": "Name of the created cluster. This name is used as the value of the \"terraform-kubeadm:cluster\" tag assigned to all created AWS resources."
+              },
+              "cluster_nodes": {
+                "expression": {
+                  "references": [
+                    "aws_instance.master",
+                    "aws_instance.workers",
+                    "aws_eip.master"
+                  ]
+                },
+                "description": "Name, public and private IP address, and subnet ID of all nodes of the created cluster."
+              },
+              "kubeconfig": {
+                "expression": {
+                  "references": [
+                    "local.kubeconfig_file"
+                  ]
+                },
+                "description": "Location of the kubeconfig file for the created cluster on the local machine."
+              },
+              "vpc_id": {
+                "expression": {
+                  "references": [
+                    "aws_security_group.egress"
+                  ]
+                },
+                "description": "ID of the VPC in which the cluster has been created."
+              }
+            },
+            "resources": [
+              {
+                "address": "aws_eip.master",
+                "mode": "managed",
+                "type": "aws_eip",
+                "name": "master",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc": {
+                    "constant_value": true
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_eip_association.master",
+                "mode": "managed",
+                "type": "aws_eip_association",
+                "name": "master",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "allocation_id": {
+                    "references": [
+                      "aws_eip.master"
+                    ]
+                  },
+                  "instance_id": {
+                    "references": [
+                      "aws_instance.master"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_instance.master",
+                "mode": "managed",
+                "type": "aws_instance",
+                "name": "master",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "ami": {
+                    "references": [
+                      "data.aws_ami.ubuntu"
+                    ]
+                  },
+                  "instance_type": {
+                    "references": [
+                      "var.master_instance_type"
+                    ]
+                  },
+                  "key_name": {
+                    "references": [
+                      "aws_key_pair.main"
+                    ]
+                  },
+                  "subnet_id": {
+                    "references": [
+                      "var.subnet_id"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags",
+                      "local.cluster_name"
+                    ]
+                  },
+                  "user_data": {
+                    "references": [
+                      "local.token",
+                      "aws_eip.master",
+                      "var.pod_network_cidr_block",
+                      "var.pod_network_cidr_block",
+                      "aws_eip.master"
+                    ]
+                  },
+                  "vpc_security_group_ids": {
+                    "references": [
+                      "aws_security_group.egress",
+                      "aws_security_group.ingress_internal",
+                      "aws_security_group.ingress_k8s",
+                      "aws_security_group.ingress_ssh"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_instance.workers",
+                "mode": "managed",
+                "type": "aws_instance",
+                "name": "workers",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "ami": {
+                    "references": [
+                      "data.aws_ami.ubuntu"
+                    ]
+                  },
+                  "associate_public_ip_address": {
+                    "constant_value": true
+                  },
+                  "instance_type": {
+                    "references": [
+                      "var.worker_instance_type"
+                    ]
+                  },
+                  "key_name": {
+                    "references": [
+                      "aws_key_pair.main"
+                    ]
+                  },
+                  "subnet_id": {
+                    "references": [
+                      "var.subnet_id"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags",
+                      "count.index",
+                      "local.cluster_name",
+                      "count.index"
+                    ]
+                  },
+                  "user_data": {
+                    "references": [
+                      "aws_instance.master",
+                      "local.token",
+                      "count.index"
+                    ]
+                  },
+                  "vpc_security_group_ids": {
+                    "references": [
+                      "aws_security_group.egress",
+                      "aws_security_group.ingress_internal",
+                      "aws_security_group.ingress_ssh"
+                    ]
+                  }
+                },
+                "schema_version": 1,
+                "count_expression": {
+                  "references": [
+                    "var.num_workers"
+                  ]
+                }
+              },
+              {
+                "address": "aws_key_pair.main",
+                "mode": "managed",
+                "type": "aws_key_pair",
+                "name": "main",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "key_name_prefix": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "public_key": {
+                    "references": [
+                      "var.public_key_file"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.egress",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "egress",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow all outgoing traffic to everywhere"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_internal",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_internal",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow all incoming traffic from nodes and Pods in the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_k8s",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_k8s",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_security_group.ingress_ssh",
+                "mode": "managed",
+                "type": "aws_security_group",
+                "name": "ingress_ssh",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "description": {
+                    "constant_value": "Allow incoming SSH traffic (TCP/22) from outside the cluster"
+                  },
+                  "name": {
+                    "references": [
+                      "local.cluster_name"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "local.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "var.vpc_id"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "null_resource.download_kubeconfig_file",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "download_kubeconfig_file",
+                "provider_config_key": "cluster_3:null",
+                "provisioners": [
+                  {
+                    "type": "local-exec",
+                    "expressions": {
+                      "command": {
+                        "references": [
+                          "var.private_key_file",
+                          "aws_eip.master",
+                          "local.kubeconfig_file"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expressions": {
+                  "triggers": {
+                    "references": [
+                      "null_resource.wait_for_bootstrap_to_finish"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "null_resource.wait_for_bootstrap_to_finish",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "wait_for_bootstrap_to_finish",
+                "provider_config_key": "cluster_3:null",
+                "provisioners": [
+                  {
+                    "type": "local-exec",
+                    "expressions": {
+                      "command": {
+                        "references": [
+                          "var.private_key_file",
+                          "aws_eip.master",
+                          "aws_instance.workers"
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expressions": {
+                  "triggers": {
+                    "references": [
+                      "aws_instance.master",
+                      "aws_instance.workers"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "random_pet.cluster_name",
+                "mode": "managed",
+                "type": "random_pet",
+                "name": "cluster_name",
+                "provider_config_key": "cluster_3:random",
+                "schema_version": 0
+              },
+              {
+                "address": "random_string.token_id",
+                "mode": "managed",
+                "type": "random_string",
+                "name": "token_id",
+                "provider_config_key": "cluster_3:random",
+                "expressions": {
+                  "length": {
+                    "constant_value": 6
+                  },
+                  "special": {
+                    "constant_value": false
+                  },
+                  "upper": {
+                    "constant_value": false
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "random_string.token_secret",
+                "mode": "managed",
+                "type": "random_string",
+                "name": "token_secret",
+                "provider_config_key": "cluster_3:random",
+                "expressions": {
+                  "length": {
+                    "constant_value": 16
+                  },
+                  "special": {
+                    "constant_value": false
+                  },
+                  "upper": {
+                    "constant_value": false
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "data.aws_ami.ubuntu",
+                "mode": "data",
+                "type": "aws_ami",
+                "name": "ubuntu",
+                "provider_config_key": "cluster_3:aws",
+                "expressions": {
+                  "filter": [
+                    {
+                      "name": {
+                        "constant_value": "name"
+                      },
+                      "values": {
+                        "constant_value": [
+                          "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+                        ]
+                      }
+                    }
+                  ],
+                  "most_recent": {
+                    "constant_value": true
+                  },
+                  "owners": {
+                    "constant_value": [
+                      "099720109477"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              }
+            ],
+            "variables": {
+              "allowed_k8s_cidr_blocks": {
+                "default": [
+                  "0.0.0.0/0"
+                ],
+                "description": "List of CIDR blocks from which it is allowed to make Kubernetes API request to the API server of the cluster. By default, Kubernetes API requests are allowed from everywhere. Note that Kubernetes API requests from Pods and nodes inside the cluster are always allowed, regardless of the value of this variable."
+              },
+              "allowed_ssh_cidr_blocks": {
+                "default": [
+                  "0.0.0.0/0"
+                ],
+                "description": "List of CIDR blocks from which it is allowed to make SSH connections to the EC2 instances that form the cluster nodes. By default, SSH connections are allowed from everywhere."
+              },
+              "cluster_name": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. Name for the Kubernetes cluster. This name will be used as the value for the \"terraform-kubeadm:cluster\" tag that is assigned to all created AWS resources. If null, a random name is automatically chosen."
+              },
+              "kubeconfig_dir": {
+                "default": ".",
+                "description": "Directory on the local machine in which to save the kubeconfig file of the created cluster. The basename of the kubeconfig file will consist of the cluster name followed by \".conf\", for example, \"my-cluster.conf\". The directory may be specified as an absolute or relative path. The directory must exist, otherwise an error occurs. By default, the current working directory is used."
+              },
+              "kubeconfig_file": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. The exact filename as which to save the kubeconfig file of the crated cluster on the local machine. The filename may be specified as an absolute or relative path. The parent directory of the filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, the value of the \"kubeconfig_dir\" variable is ignored."
+              },
+              "master_instance_type": {
+                "default": "t2.medium",
+                "description": "EC2 instance type for the master node (must have at least 2 CPUs)."
+              },
+              "num_workers": {
+                "default": 2,
+                "description": "Number of worker nodes."
+              },
+              "pod_network_cidr_block": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (i.e. sets the \".spec.podCIDR\" field of the node objects). If null, the cluster is created without an explicitly determined Pod network IP address range, and the nodes are not allocated any Pod subnet IP address ranges (i.e. the \".spec.podCIDR\" field of the nodes is not set)."
+              },
+              "private_key_file": {
+                "default": "~/.ssh/id_rsa",
+                "description": "Filename of the private key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
+              },
+              "public_key_file": {
+                "default": "~/.ssh/id_rsa.pub",
+                "description": "Filename of the public key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
+              },
+              "subnet_id": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. ID of the AWS subnet in which to create the cluster. If null, one of the default subnets in the default VPC is used. The subnet must be in the VPC specified by the \"vpc_id\" variable, otherwise an error occurs."
+              },
+              "tags": {
+                "default": {},
+                "description": "A set of tags to assign to the created AWS resources. These tags will be assigned in addition to the default tags. The default tags include \"terraform-kubeadm:cluster\" which is assigned to all resources and whose value is the cluster name, and \"terraform-kubeadm:node\" which is assigned to the EC2 instances and whose value is the name of the Kubernetes node that this EC2 corresponds to."
+              },
+              "vpc_id": {
+                "default": null,
+                "description": "**This is an optional variable with a default value of null**. ID of the AWS VPC in which to create the cluster. If null, the default VPC is used."
+              },
+              "worker_instance_type": {
+                "default": "t2.small",
+                "description": "EC2 instance type for the worker nodes."
+              }
+            }
+          }
+        },
+        "network": {
+          "source": "weibeld/kubeadm/aws//modules/network",
+          "expressions": {
+            "tags": {
+              "references": [
+                "local.additional_tags"
+              ]
+            }
+          },
+          "module": {
+            "outputs": {
+              "subnet_id": {
+                "expression": {
+                  "references": [
+                    "aws_subnet.main"
+                  ]
+                },
+                "description": "ID of the created subnet."
+              },
+              "vpc_id": {
+                "expression": {
+                  "references": [
+                    "aws_vpc.main"
+                  ]
+                },
+                "description": "ID of the created VPC."
+              }
+            },
+            "resources": [
+              {
+                "address": "aws_internet_gateway.main",
+                "mode": "managed",
+                "type": "aws_internet_gateway",
+                "name": "main",
+                "provider_config_key": "network:aws",
+                "expressions": {
+                  "tags": {
+                    "references": [
+                      "var.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "aws_vpc.main"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_route_table.main",
+                "mode": "managed",
+                "type": "aws_route_table",
+                "name": "main",
+                "provider_config_key": "network:aws",
+                "expressions": {
+                  "tags": {
+                    "references": [
+                      "var.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "aws_vpc.main"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_route_table_association.main",
+                "mode": "managed",
+                "type": "aws_route_table_association",
+                "name": "main",
+                "provider_config_key": "network:aws",
+                "expressions": {
+                  "route_table_id": {
+                    "references": [
+                      "aws_route_table.main"
+                    ]
+                  },
+                  "subnet_id": {
+                    "references": [
+                      "aws_subnet.main"
+                    ]
+                  }
+                },
+                "schema_version": 0
+              },
+              {
+                "address": "aws_subnet.main",
+                "mode": "managed",
+                "type": "aws_subnet",
+                "name": "main",
+                "provider_config_key": "network:aws",
+                "expressions": {
+                  "cidr_block": {
+                    "references": [
+                      "var.cidr_block"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "var.tags"
+                    ]
+                  },
+                  "vpc_id": {
+                    "references": [
+                      "aws_vpc.main"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              },
+              {
+                "address": "aws_vpc.main",
+                "mode": "managed",
+                "type": "aws_vpc",
+                "name": "main",
+                "provider_config_key": "network:aws",
+                "expressions": {
+                  "cidr_block": {
+                    "references": [
+                      "var.cidr_block"
+                    ]
+                  },
+                  "tags": {
+                    "references": [
+                      "var.tags"
+                    ]
+                  }
+                },
+                "schema_version": 1
+              }
+            ],
+            "variables": {
+              "cidr_block": {
+                "default": "172.31.0.0/16",
+                "description": "CIDR block for the VPC and subnet. This value will determine the private IP addresses of the Kubernetes cluster nodes."
+              },
+              "tags": {
+                "default": {},
+                "description": "A set of tags to assign to the created resources."
+              }
+            }
+          },
+          "version_constraint": "~\u003e 0.2"
+        }
+      },
+      "variables": {
+        "cluster_names": {
+          "default": [
+            null,
+            null,
+            null
+          ],
+          "description": "Names for the individual clusters. If the value for a specific cluster is null, a random name will be automatically chosen."
+        },
+        "region": {
+          "description": "AWS region in which to create the clusters."
+        }
+      }
+    }
+  }
+}
