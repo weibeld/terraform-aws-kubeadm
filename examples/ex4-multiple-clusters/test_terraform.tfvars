@@ -3,3 +3,5 @@ cluster_names = [
   "beta",
   "gamma",
 ]
+
+region = "us-east-1"
