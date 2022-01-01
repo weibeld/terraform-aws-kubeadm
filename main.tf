@@ -176,7 +176,11 @@ resource "aws_instance" "master" {
 
   # Prepare kubeconfig file for download to local machine
   cp /etc/kubernetes/admin.conf /home/ubuntu
-  chown ubuntu:ubuntu /home/ubuntu/admin.conf
+  pwd >/home/ubuntu/out
+  whoami >>/home/ubuntu/out
+  ls -l /home/ubuntu/admin.conf >>/home/ubuntu/out
+  sudo chown ubuntu:ubuntu /home/ubuntu/admin.conf 
+  ls -l /home/ubuntu/admin.conf >>/home/ubuntu/out
   kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
 
   # Indicate completion of bootstrapping on this node

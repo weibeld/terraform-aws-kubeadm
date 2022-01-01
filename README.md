@@ -34,11 +34,78 @@ The module does on purpose not produce production-ready cluster, for example, by
 
 In other words, since the module does not install a CNI plugin by default, you can use this module to test arbitrary configurations of CNI plugins on a freshly bootstrapped cluster.
 
+## Prerequisites
+
+In order to use this module, make sure to meet the following prerequisites.
+
+### Terraform
+
+Install Terraform as described in the [Terraform documentation](https://learn.hashicorp.com/tutorials/terraform/install-cli).
+
+If you use macOS, you can simply do:
+
+```bash
+brew install terraform
+```
+
+### AWS credentials
+
+Install the AWS CLI as described in the [AWS CLI documentation](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
+
+Once this is done, run the following command:
+
+```bash
+aws configure
+```
+
+And enter your **AWS Access Key ID** and **AWS Secret Access Key** in the interactive dialog. 
+
+> You can find the AWS Access Key ID of your AWS user account on the [IAM page](https://console.aws.amazon.com/iamv2/home#/users) of the AWS Console. The AWS Secret Access Key is only displayed immediately after creating a new AWS user and you should keep it safe.
+
+The above command saves your credentials in a file named [`~/.aws/credentials`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where).
+
+You can verify that the AWS credentials have been correctly configured with the following command:
+
+```bash
+aws sts get-caller-identity
+```
+
+The output should be something like:
+
+```json
+{
+    "UserId": "XYZXYZXYZXYZXYZXYZXYZ",
+    "Account": "123123123123",
+    "Arn": "arn:aws:iam::123123123123:user/myusername"
+}
+```
+
+Verify that the `Account` field matches the ID of your AWS account (which you can find on the [My Account](https://console.aws.amazon.com/billing/home?#/account) page in the AWS Console), and that the `Arn` field includes the name of your AWS user.
+
+### OpenSSH
+
+The module requires the `ssh` and `scp` commands, which are most probably already installed on your system. In case they aren't, you can install them with:
+
+```bash
+# Linux
+sudo apt-get install openssh-client
+# macOS
+brew install openssh
+```
+
+The module, by default, uses the default SSH key par `~/.ssh/id_rsa` and `~/.ssh/id_rsa.pub` to set up SSH acess to your cluster nodes. In case you don't have this key pair, you can create it with:
+
+```bash
+ssh-keygen
+```
+
+> Note that you can configure a different SSH key pair through the module's [input variables](variables.tf).
+
 ## Quick start
 
-First, ensure the [prerequisites](#prerequisites) below.
+> The following demonstrates a minimal usage of the module using all the default values. This will create a Kubernetes cluster with a single master node and two worker nodes.
 
-A minimal usage of the module looks as follows:
+Create an empty directory and save the following configuration in a file named `main.tf`:
 
 ```hcl
 provider "aws" {
@@ -47,9 +114,54 @@ provider "aws" {
 
 module "cluster" {
   source           = "weibeld/kubeadm/aws"
-  version          = "~> 0.2"
+  version          = "0.2.4"
 }
 ```
+
+> The `region` variable specifies the AWS region in which the cluster will be created. You can insert your desired [AWS region](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions) there.
+
+Now, run the following command:
+
+```bash
+terraform init
+```
+
+The [`terraform init`](https://www.terraform.io/docs/cli/commands/init.html) command downloads the module as well as the latest versions of any required [providers](https://registry.terraform.io/browse/providers).
+
+Next, run:
+
+```bash
+terraform apply
+```
+
+The [`terraform apply`](https://www.terraform.io/docs/cli/commands/apply.html) command first displays all the AWS resources that it's planning create, and asks you in an interactive dialog if you want to proceed.
+
+Type `yes` to proceed.
+
+> If you want to skip the interactive dialog and automatically proceed, you can use `terraform apply --auto-approve`.
+
+
+
+
+
+### Cleaning up
+
+To delete the Kubernetes cluster, run the following command:
+
+```bash
+terraform destroy
+```
+
+The [`terraform destroy`](https://www.terraform.io/docs/cli/commands/destroy.html) command first displays all the AWS resources it's planning to delete, and asks you for confirmation to proceed.
+
+Type `yes` to proceed.
+
+> Again, if you want to skip the interactive dialog and automatically proceed, you can use `--auto-approve` flag.
+
+After a few minutes, all the AWS resources that you previously created should be deleted, and your AWS account should be in exactly the same state as before you created the Kubernetes cluster.
+
+
+
 
 Running `terraform apply` with this configuration results in the creation of a Kubernetes cluster with one master node and two worker nodes in one of the default subnets of the default VPC of the `eu-central-1` region.
 
@@ -85,63 +197,6 @@ For details about the created AWS resources, see [AWS resources](#aws-resources)
 
 The module depends on the following prerequisites:
 
-### 1. Install Terraform
-
-[Installing Terraform](https://www.terraform.io/downloads.html) is done by simply downloading the Terraform binary for your target platform from the Terraform website and moving it to any directory in your `PATH`.
-
-On macOS, you can alternatively install Terraform with:
-
-```bash
-brew install terraform
-```
-
-### 2. Configure AWS credentials
-
-Terraform needs to have access to the **AWS Access Key ID** and **AWS Secret Access Key** of your AWS account in order to create AWS resources.
-
-You can achieve this in one of the two following ways:
-
--  Create an [`~/.aws/credentials`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-where) file. This is automatically done for you if you configure the [AWS CLI](https://aws.amazon.com/cli/):
-
-    ```bash
-    aws configure
-    ```
-
-- Set the [`AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) environment variables to your Access Key ID and Secret Access Key:
-
-    ```bash
-    export AWS_ACCESS_KEY_ID=<AccessKeyID>
-    export AWS_SECRET_ACCESS_KEY=<SecretAccessKey>
-    ```
-
-### 3. Set up OpenSSH
-
-The module depends on the `ssh` and `scp` tools being installed on your local machine. These tools are installed by default on most systems as part of the [OpenSSH](https://www.openssh.com/) package. In the unlikely case that OpenSSH isn't installed on your system, you can install it with:
-
-```bash
-# Linux
-sudo apt-get install openssh-client
-# macOS
-brew install openssh
-```
-
-Furthermore, the module by default uses the default OpenSSH key pair consisting of `~/.ssh/id_rsa` (private key) and `~/.ssh/id_rsa.pub` (public key) for setting up SSH access to the nodes of the cluster.
-
-If you currently don't have this key pair on your system, you can generate it by running:
-
-```bash
-ssh-keygen
-```
-
-Note that `~/.ssh/id_rsa` and `~/.ssh/id_rsa.pub` are just default values and you can specify a different key pair to the module (with the `private_key_file` and `public_key_file` variables).
-
-For example, you can generate a dedicated key pair for your cluster with:
-
-```bash
-ssh-keygen -f my-key
-```
-
-Which creates two files named `my-key` (private key) and `my-key.pub` (public key), which you can then specify to the corresponding input variables of the module.
 
 ## AWS resources
 
