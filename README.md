@@ -1,6 +1,6 @@
 # AWS kubeadm module
 
-Terraform module for bootstrapping a Kubernetes cluster with kubeadm on AWS.
+Terraform module for creating a kubeadm cluster on AWS.
 
 ## Contents
 
@@ -36,9 +36,16 @@ In other words, since the module does not install a CNI plugin by default, you c
 
 ## Quick start
 
-First, ensure the [prerequisites](#prerequisites) below.
+> This guide assumes that you have [installed Terraform](https://www.terraform.io/downloads.html) and [configured AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html) on your machine (if you're already using the [AWS CLI](https://aws.amazon.com/cli/), then the latter point is automatically fulfilled).
 
-A minimal usage of the module looks as follows:
+Create a new directory for your Terraform configuration:
+
+```bash
+mkdir terraform-kubeadm
+cd $_
+```
+
+Save the following in a file named `main.tf`:
 
 ```hcl
 provider "aws" {
@@ -50,6 +57,103 @@ module "cluster" {
   version          = "~> 0.2"
 }
 ```
+
+> In the above example, `eu-central-1` is the [AWS region](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) in which the cluster will be created. You can replace this with your desired AWS region.
+
+Run [`terraform init`](https://www.terraform.io/docs/commands/init.html) to download the `weibeld/kubeadm/aws` module:
+
+```bash
+terraform init
+```
+
+Run [`terraform apply`](https://www.terraform.io/docs/commands/apply.html) to create the cluster:
+
+```bash
+terraform apply
+```
+
+When the above command completes, you should have a kubeconfig file with a random name (such as `relaxed-ocelot.conf`) in your current working directory. You can use this kubeconfig file to access your newly created Kubernetes cluster as follows:
+
+```bash
+kubectl --kubeconfig relaxed-ocelot.conf get nodes
+```
+
+> You can also set the [`KUBECONFIG`](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/#the-kubeconfig-environment-variable) environment variable in your shell to avoid using the `--kubeconfig` flag.
+
+**Note that the nodes of your cluster currently are `NotReady`.**
+
+This is because there's no [Container Networking Interface (CNI) plugin](https://github.com/containernetworking/cni) installed in your cluster yet. You have to carry out this step manually before you can use your cluster, thus giving you the flexibiltiy to freely choose the CNI plugin you want to use.
+
+As an example, here's how you can install the [Calico CNI plugin](https://www.projectcalico.org/):
+
+```bash
+kubectl --kubeconfig relaxed-ocelot.conf apply \
+  -f https://docs.projectcalico.org/manifests/calico.yaml
+```
+
+After a minute or two, your nodes should be `Ready`:
+
+```bash
+kubectl --kubeconfig relaxed-ocelot.conf get nodes
+```
+
+Your cluster is now complete and you can start using it!
+
+To destroy the cluster and all the underlying AWS resources, you can use the [`terraform destroy`](https://www.terraform.io/docs/commands/destroy.html) command:
+
+```bash
+terraform destroy
+```
+
+> _Note that the `terraform destroy` command doesn't delete the kubeconfig file in your current working directory, so you have to do this manually._
+
+## AWS resources
+
+### Listing resources belonging to the cluster
+
+The module creates a couple of AWS resources in your account. With the default parameters (1 master nodes and 2 worker nodes), these are:
+
+| Explicitly created        | Implicitly created (default sub-resources)                          |
+|---------------------------|---------------------------------------------------------------------|
+| 3 [EC2 Instances][i]      | 3 [Volumes][vol], 3 [Network Interfaces][eni]                       |
+| 4 [Security Groups][sg]   |                                                                     |
+| 1 [Elastic IP][eip]       |                                                                     |
+| 1 [Key Pair][key]         |                                                                     |
+
+You can list all the AWS resources belonging to your cluster in the [AWS Tag Editor](https://console.aws.amazon.com/resource-groups/tag-editor). To do so, log in to your AWS Console and click on *Resource Groups > Tag Editor*:
+
+![AWS Tag Editor](assets/tag-editor-1.png)
+
+In the Tag Editor, select the AWS region in which you created the cluster, select _All resource types_, and fill in the _**tag key**_ field with **`terraform-kubeadm:cluster`** and the _**tag value**_ field with with the name of your cluster (e.g. **`relaxed-ocelot`**):
+
+![AWS Tag Editor](assets/tag-editor-2.png)
+
+After hitting _Search resources_, you can see all the AWS resources belonging to your cluster.
+
+> _Note that [Key Pairs][key] are not listed in the Tag Editor._
+
+### SSH access to EC2 instances
+
+The module also sets up SSH access to the nodes of the cluster. By default, it uses the OpenSSH default key pair consisting of `~/.ssh/id_rsa` (private key) and `~/.ssh/id_rsa.pub` (public key) on your local machine for this. Thus, you can connect to the nodes of the cluster as follows:
+
+```bash
+ssh -i ~/.ssh/id_rsa ubuntu@<PUBLIC-IP>
+```
+
+The public IP addresses of all the nodes are specified in the output of the module, which you can display with `terraform output`.
+
+For details about the created AWS resources, see [AWS resources](#aws-resources) below. For more advanced usage examples, see the [examples](https://github.com/weibeld/terraform-aws-kubeadm/tree/master/examples).
+
+
+All of the explicitly created AWS resources get a tag so that you can easily identify them. This tag has the following form:
+
+```
+terraform-kubeadm:cluster=<cluster-name>
+```
+
+Where `<cluster-name>` is the name of your created cluster (such as `relaxed-ocelot`).
+
+
 
 Running `terraform apply` with this configuration results in the creation of a Kubernetes cluster with one master node and two worker nodes in one of the default subnets of the default VPC of the `eu-central-1` region.
 
