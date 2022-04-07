@@ -157,11 +157,26 @@ resource "aws_instance" "master" {
   #!/bin/bash
 
   # Install kubeadm and Docker
-  apt-get update
+  # https://stackoverflow.com/questions/45708175/kubelet-failed-with-kubelet-cgroup-driver-cgroupfs-is-different-from-docker-c
+  mkdir -p /etc/docker
+  cat > /etc/docker/daemon.json << DOCKER
+  {
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "log-driver": "json-file",
+    "log-opts": {
+      "max-size": "100m"
+    },
+    "storage-driver": "overlay2",
+    "storage-opts": [
+      "overlay2.override_kernel_check=true"
+    ]
+  }
+  DOCKER
+  apt-get update -y
   apt-get install -y apt-transport-https curl
   curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
   echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-  apt-get update
+  apt-get update -y
   apt-get install -y docker.io kubeadm
 
   # Run kubeadm
@@ -172,7 +187,7 @@ resource "aws_instance" "master" {
   %{if var.pod_network_cidr_block != null~}
     --pod-network-cidr "${var.pod_network_cidr_block}" \
   %{endif~}
-    --node-name master
+    --node-name master > /etc/kubeadm.init.log
 
   # Prepare kubeconfig file for download to local machine
   cp /etc/kubernetes/admin.conf /home/ubuntu
@@ -190,6 +205,9 @@ resource "aws_instance" "master" {
 
 resource "aws_instance" "workers" {
   count                       = var.num_workers
+  depends_on = [
+    aws_instance.master
+  ]
   ami                         = data.aws_ami.ubuntu.image_id
   instance_type               = var.worker_instance_type
   subnet_id                   = var.subnet_id
@@ -205,18 +223,33 @@ resource "aws_instance" "workers" {
   #!/bin/bash
 
   # Install kubeadm and Docker
-  apt-get update
+  # https://stackoverflow.com/questions/45708175/kubelet-failed-with-kubelet-cgroup-driver-cgroupfs-is-different-from-docker-c
+  mkdir -p /etc/docker
+  cat > /etc/docker/daemon.json << DOCKER
+  {
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "log-driver": "json-file",
+    "log-opts": {
+      "max-size": "100m"
+    },
+    "storage-driver": "overlay2",
+    "storage-opts": [
+      "overlay2.override_kernel_check=true"
+    ]
+  }
+  DOCKER
+  apt-get update -y
   apt-get install -y apt-transport-https curl
   curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
   echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-  apt-get update
+  apt-get update -y
   apt-get install -y docker.io kubeadm
 
   # Run kubeadm
   kubeadm join ${aws_instance.master.private_ip}:6443 \
     --token ${local.token} \
     --discovery-token-unsafe-skip-ca-verification \
-    --node-name worker-${count.index}
+    --node-name worker-${count.index} > /etc/kubeadm.join.log
 
   # Indicate completion of bootstrapping on this node
   touch /home/ubuntu/done
@@ -241,6 +274,9 @@ resource "null_resource" "wait_for_bootstrap_to_finish" {
     done
     EOF
   }
+  depends_on = [
+    aws_instance.master
+  ]
   triggers = {
     instance_ids = join(",", concat([aws_instance.master.id], aws_instance.workers[*].id))
   }
