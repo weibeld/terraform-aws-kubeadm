@@ -11,6 +11,12 @@ variable "cluster_name" {
 # Optional variables
 #------------------------------------------------------------------------------#
 
+variable "kubeconfig" {
+  type        = string
+  description = "Name of the kubeconfig file for the created cluster on the local machine. If this is unset, then the kubeconfig file is saved as '<cluster_name>.conf' in the current working directory."
+  default     = null
+}
+
 variable "private_key_file" {
   type        = string
   description = "Filename of the private key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
@@ -35,17 +41,6 @@ variable "subnet_id" {
   default     = null
 }
 
-variable "kubeconfig_dir" {
-  type        = string
-  description = "Directory on the local machine in which to save the kubeconfig file of the created cluster. The basename of the kubeconfig file will consist of the cluster name followed by \".conf\", for example, \"my-cluster.conf\". The directory may be specified as an absolute or relative path. The directory must exist, otherwise an error occurs. By default, the current working directory is used."
-  default     = "."
-}
-
-variable "kubeconfig_file" {
-  type        = string
-  description = "**This is an optional variable with a default value of null**. The exact filename as which to save the kubeconfig file of the crated cluster on the local machine. The filename may be specified as an absolute or relative path. The parent directory of the filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, the value of the \"kubeconfig_dir\" variable is ignored."
-  default     = null
-}
 
 variable "allowed_ssh_cidr_blocks" {
   type        = list(string)
