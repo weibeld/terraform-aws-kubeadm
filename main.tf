@@ -153,6 +153,8 @@ resource "aws_instance" "master" {
     aws_security_group.ingress_ssh.id
   ]
   tags      = merge(local.tags, { "terraform-kubeadm:node" = "master" })
+  # Run as root by AWS [1], logs in /var/log/cloud-init-output.log [1]
+  # [1] https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
   user_data = <<-EOF
   #!/bin/bash
 
@@ -208,6 +210,8 @@ resource "aws_instance" "workers" {
     aws_security_group.ingress_ssh.id
   ]
   tags      = merge(local.tags, { "terraform-kubeadm:node" = "worker-${count.index}" })
+  # Run as root by AWS [1], logs in /var/log/cloud-init-output.log [1]
+  # [1] https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
   user_data = <<-EOF
   #!/bin/bash
 
