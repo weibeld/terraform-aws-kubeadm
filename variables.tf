@@ -1,3 +1,16 @@
+#------------------------------------------------------------------------------#
+# Mandatory variables
+#------------------------------------------------------------------------------#
+
+variable "cluster_name" {
+  type        = string
+  description = "Name of the Kubernetes cluster to create. This name will be used in the names and tags of the created AWS resources and for the local kubeconfig file."
+}
+
+#------------------------------------------------------------------------------#
+# Optional variables
+#------------------------------------------------------------------------------#
+
 variable "private_key_file" {
   type        = string
   description = "Filename of the private key of a key pair on your local machine. This key pair will allow to connect to the nodes of the cluster with SSH."
@@ -31,12 +44,6 @@ variable "kubeconfig_dir" {
 variable "kubeconfig_file" {
   type        = string
   description = "**This is an optional variable with a default value of null**. The exact filename as which to save the kubeconfig file of the crated cluster on the local machine. The filename may be specified as an absolute or relative path. The parent directory of the filename must exist, otherwise an error occurs. If a file with the same name already exists, it will be overwritten. If this variable is set to a value other than null, the value of the \"kubeconfig_dir\" variable is ignored."
-  default     = null
-}
-
-variable "cluster_name" {
-  type        = string
-  description = "**This is an optional variable with a default value of null**. Name for the Kubernetes cluster. This name will be used as the value for the \"terraform-kubeadm:cluster\" tag that is assigned to all created AWS resources. If null, a random name is automatically chosen."
   default     = null
 }
 

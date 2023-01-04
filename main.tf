@@ -6,11 +6,8 @@ terraform {
 # Common local values
 #------------------------------------------------------------------------------#
 
-resource "random_pet" "cluster_name" {}
-
 locals {
-  cluster_name = var.cluster_name != null ? var.cluster_name : random_pet.cluster_name.id
-  tags         = merge(var.tags, { "terraform-kubeadm:cluster" = local.cluster_name })
+  tags = merge(var.tags, { "terraform-kubeadm:cluster" = var.cluster_name })
 }
 
 #------------------------------------------------------------------------------#
@@ -19,7 +16,7 @@ locals {
 
 # Performs 'ImportKeyPair' API operation (not 'CreateKeyPair')
 resource "aws_key_pair" "main" {
-  key_name_prefix = "${local.cluster_name}-"
+  key_name_prefix = "${var.cluster_name}-"
   public_key      = file(var.public_key_file)
   tags            = local.tags
 }
@@ -31,7 +28,7 @@ resource "aws_key_pair" "main" {
 # The AWS provider removes the default "allow all "egress rule from all security
 # groups, so it has to be defined explicitly.
 resource "aws_security_group" "egress" {
-  name        = "${local.cluster_name}-egress"
+  name        = "${var.cluster_name}-egress"
   description = "Allow all outgoing traffic to everywhere"
   vpc_id      = var.vpc_id
   tags        = local.tags
@@ -44,7 +41,7 @@ resource "aws_security_group" "egress" {
 }
 
 resource "aws_security_group" "ingress_internal" {
-  name        = "${local.cluster_name}-ingress-internal"
+  name        = "${var.cluster_name}-ingress-internal"
   description = "Allow all incoming traffic from nodes and Pods in the cluster"
   vpc_id      = var.vpc_id
   tags        = local.tags
@@ -66,7 +63,7 @@ resource "aws_security_group" "ingress_internal" {
 }
 
 resource "aws_security_group" "ingress_k8s" {
-  name        = "${local.cluster_name}-ingress-k8s"
+  name        = "${var.cluster_name}-ingress-k8s"
   description = "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
   vpc_id      = var.vpc_id
   tags        = local.tags
@@ -79,7 +76,7 @@ resource "aws_security_group" "ingress_k8s" {
 }
 
 resource "aws_security_group" "ingress_ssh" {
-  name        = "${local.cluster_name}-ingress-ssh"
+  name        = "${var.cluster_name}-ingress-ssh"
   description = "Allow incoming SSH traffic (TCP/22) from outside the cluster"
   vpc_id      = var.vpc_id
   tags        = local.tags
@@ -269,7 +266,7 @@ resource "null_resource" "wait_for_bootstrap_to_finish" {
 #------------------------------------------------------------------------------#
 
 locals {
-  kubeconfig_file = var.kubeconfig_file != null ? abspath(pathexpand(var.kubeconfig_file)) : "${abspath(pathexpand(var.kubeconfig_dir))}/${local.cluster_name}.conf"
+  kubeconfig_file = var.kubeconfig_file != null ? abspath(pathexpand(var.kubeconfig_file)) : "${abspath(pathexpand(var.kubeconfig_dir))}/${var.cluster_name}.conf"
 }
 
 resource "null_resource" "download_kubeconfig_file" {
