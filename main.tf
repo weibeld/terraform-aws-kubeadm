@@ -152,7 +152,7 @@ resource "aws_instance" "master" {
     aws_security_group.ingress_k8s.id,
     aws_security_group.ingress_ssh.id
   ]
-  tags      = merge(local.tags, { "terraform-kubeadm:node" = "master" })
+  tags      = merge(local.tags, { "terraform-kubeadm:node" = "master", "Name" = "${local.cluster_name}-master"})
   user_data = <<-EOF
   #!/bin/bash
 
@@ -188,6 +188,16 @@ resource "aws_instance" "master" {
   EOF
 }
 
+//resource "aws_autoscaling_group" "master" {
+//  min_size = 1
+//  desired_capacity = 1
+//  max_size = 1
+//}
+//resource "aws_autoscaling_group" "workers" {
+//  min_size = 1
+//  desired_capacity = 1
+//  max_size = 1
+//}
 resource "aws_instance" "workers" {
   count                       = var.num_workers
   ami                         = data.aws_ami.ubuntu.image_id
@@ -200,7 +210,7 @@ resource "aws_instance" "workers" {
     aws_security_group.ingress_internal.id,
     aws_security_group.ingress_ssh.id
   ]
-  tags      = merge(local.tags, { "terraform-kubeadm:node" = "worker-${count.index}" })
+  tags      = merge(local.tags, { "terraform-kubeadm:node" = "worker-${count.index}", "Name" = "${local.cluster_name}-worker-${count.index}"})
   user_data = <<-EOF
   #!/bin/bash
 

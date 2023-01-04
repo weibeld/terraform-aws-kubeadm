@@ -1,5 +1,5 @@
 .terraform*
 terraform.tfstate*
-terraform.tfvars
-!examples/**/terraform.tfvars
+*.tfvars
+!examples/**/test_terraform.tfvars
 *.conf
