@@ -164,6 +164,13 @@ resource "aws_instance" "master" {
   apt-get update
   apt-get install -y docker.io kubeadm
 
+  # Enabled systemd cgroup driver for containerd [1]
+  # [1] https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
+  mkdir -p /etc/containerd
+  containerd config default >/etc/containerd/config.toml
+  sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+  systemctl restart containerd
+
   # Run kubeadm
   kubeadm init \
     --token "${local.token}" \
@@ -211,6 +218,13 @@ resource "aws_instance" "workers" {
   echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
   apt-get update
   apt-get install -y docker.io kubeadm
+
+  # Enabled systemd cgroup driver for containerd [1]
+  # [1] https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
+  mkdir -p /etc/containerd
+  containerd config default >/etc/containerd/config.toml
+  sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+  systemctl restart containerd
 
   # Run kubeadm
   kubeadm join ${aws_instance.master.private_ip}:6443 \
