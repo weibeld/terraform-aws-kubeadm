@@ -150,27 +150,51 @@ resource "aws_instance" "master" {
     aws_security_group.ingress_ssh.id
   ]
   tags      = merge(local.tags, { "terraform-kubeadm:node" = "master" })
-  # Run as root by AWS [1], logs in /var/log/cloud-init-output.log [1]
-  # [1] https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
-  user_data = <<-EOF
+  # Logs in /var/log/cloud-init-output.log
+  # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
+  user_data = <<-EEOOFF
   #!/bin/bash
 
-  # Install kubeadm and Docker
-  apt-get update
-  apt-get install -y apt-transport-https curl
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-  apt-get update
-  apt-get install -y docker.io kubeadm
+  # Networking requirements
+  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#install-and-configure-prerequisites
+  cat <<EOF >/etc/modules-load.d/k8s.conf
+  overlay
+  br_netfilter
+  EOF
+  modprobe overlay
+  modprobe br_netfilter
+  cat <<EOF >/etc/sysctl.d/k8s.conf
+  net.bridge.bridge-nf-call-iptables = 1
+  net.bridge.bridge-nf-call-ip6tables = 1
+  net.ipv4.ip_forward = 1
+  EOF
+  sysctl --system
 
-  # Enabled systemd cgroup driver for containerd [1]
-  # [1] https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
+  # Install containerd
+  # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+  # https://github.com/containerd/containerd/blob/main/docs/getting-started.md#option-2-from-apt-get-or-dnf
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >/etc/apt/sources.list.d/docker.list
+  apt-get update
+  apt-get install -y containerd.io
+
+  # Configure containerd to use the systemd cgroup driver
+  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
   mkdir -p /etc/containerd
   containerd config default >/etc/containerd/config.toml
   sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
   systemctl restart containerd
 
-  # Run kubeadm
+  # Install Kubernetes tools
+  # https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
+  apt-get install -y apt-transport-https
+  curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
+  apt-get update
+  apt-get install -y kubeadm kubelet kubectl
+  apt-mark hold kubelet kubeadm kubectl 
+
+  # Initialise cluster
   kubeadm init \
     --token "${local.token}" \
     --token-ttl 15m \
@@ -180,7 +204,7 @@ resource "aws_instance" "master" {
   %{endif~}
     --node-name master
 
-  # Prepare kubeconfig file for download to local machine
+  # Prepare kubeconfig file for download
   cp /etc/kubernetes/admin.conf /home/ubuntu
   pwd >/home/ubuntu/out
   whoami >>/home/ubuntu/out
@@ -189,9 +213,9 @@ resource "aws_instance" "master" {
   ls -l /home/ubuntu/admin.conf >>/home/ubuntu/out
   kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
 
-  # Indicate completion of bootstrapping on this node
+  # Indicate completion
   touch /home/ubuntu/done
-  EOF
+  EEOOFF
 }
 
 resource "aws_instance" "workers" {
@@ -209,33 +233,57 @@ resource "aws_instance" "workers" {
   tags      = merge(local.tags, { "terraform-kubeadm:node" = "worker-${count.index}" })
   # Run as root by AWS [1], logs in /var/log/cloud-init-output.log [1]
   # [1] https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
-  user_data = <<-EOF
+  user_data = <<-EEOOFF
   #!/bin/bash
 
-  # Install kubeadm and Docker
-  apt-get update
-  apt-get install -y apt-transport-https curl
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-  apt-get update
-  apt-get install -y docker.io kubeadm
+  # Networking requirements
+  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#install-and-configure-prerequisites
+  cat <<EOF >/etc/modules-load.d/k8s.conf
+  overlay
+  br_netfilter
+  EOF
+  modprobe overlay
+  modprobe br_netfilter
+  cat <<EOF >/etc/sysctl.d/k8s.conf
+  net.bridge.bridge-nf-call-iptables = 1
+  net.bridge.bridge-nf-call-ip6tables = 1
+  net.ipv4.ip_forward = 1
+  EOF
+  sysctl --system
 
-  # Enabled systemd cgroup driver for containerd [1]
-  # [1] https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
+  # Install containerd
+  # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+  # https://github.com/containerd/containerd/blob/main/docs/getting-started.md#option-2-from-apt-get-or-dnf
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >/etc/apt/sources.list.d/docker.list
+  apt-get update
+  apt-get install -y containerd.io
+
+  # Configure containerd to use the systemd cgroup driver
+  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
   mkdir -p /etc/containerd
   containerd config default >/etc/containerd/config.toml
   sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
   systemctl restart containerd
 
-  # Run kubeadm
+  # Install Kubernetes tools
+  # https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
+  apt-get install -y apt-transport-https
+  curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
+  apt-get update
+  apt-get install -y kubeadm kubelet kubectl
+  apt-mark hold kubelet kubeadm kubectl 
+
+  # Join cluster
   kubeadm join ${aws_instance.master.private_ip}:6443 \
     --token ${local.token} \
     --discovery-token-unsafe-skip-ca-verification \
     --node-name worker-${count.index}
 
-  # Indicate completion of bootstrapping on this node
+  # Indicate completion
   touch /home/ubuntu/done
-  EOF
+  EEOOFF
 }
 
 #------------------------------------------------------------------------------#
