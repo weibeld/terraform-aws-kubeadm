@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Networking requirements
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/#install-and-configure-prerequisites
+cat <<EOF >/etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
+modprobe overlay
+modprobe br_netfilter
+cat <<EOF >/etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward = 1
+EOF
+sysctl --system
+
+# Install containerd
+# https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+# https://github.com/containerd/containerd/blob/main/docs/getting-started.md#option-2-from-apt-get-or-dnf
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >/etc/apt/sources.list.d/docker.list
+apt-get update
+apt-get install -y containerd.io
+
+# Configure containerd to use the systemd cgroup driver
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
+mkdir -p /etc/containerd
+containerd config default >/etc/containerd/config.toml
+sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+systemctl restart containerd
+
+# Install Kubernetes tools
+# https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
+apt-get install -y apt-transport-https
+curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
+apt-get update
+apt-get install -y kubeadm kubelet kubectl
+apt-mark hold kubelet kubeadm kubectl 
+
+%{ if node == "master" ~}
+#------------------------------------------------------------------------------#
+# Master: initialise cluster
+#------------------------------------------------------------------------------#
+kubeadm init \
+  --token "${token}" \
+  --token-ttl 15m \
+  --apiserver-cert-extra-sans "${master_public_ip}" \
+  %{~ if cidr != null ~}
+  --pod-network-cidr "${cidr}" \
+  %{~ endif ~}
+  --node-name master
+
+# Prepare kubeconfig file for downloading
+cp /etc/kubernetes/admin.conf /home/ubuntu
+chown ubuntu:ubuntu /home/ubuntu/admin.conf 
+kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server "https://${master_public_ip}:6443"
+%{~ endif ~}
+
+%{~ if node == "worker" ~}
+#------------------------------------------------------------------------------#
+# Worker: join cluster
+#------------------------------------------------------------------------------#
+kubeadm join "${master_private_ip}:6443" \
+  --token "${token}" \
+  --discovery-token-unsafe-skip-ca-verification \
+  --node-name worker-${worker_index}
+%{~ endif }
+
+# Indicate completion
+touch /home/ubuntu/done

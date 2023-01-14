@@ -151,72 +151,21 @@ resource "aws_instance" "master" {
     aws_security_group.ingress_ssh.id
   ]
   tags      = merge(local.tags, { "terraform-kubeadm:node" = "master" })
-  # Logs in /var/log/cloud-init-output.log
-  # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
-  user_data = <<-EEOOFF
-  #!/bin/bash
-
-  # Networking requirements
-  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#install-and-configure-prerequisites
-  cat <<EOF >/etc/modules-load.d/k8s.conf
-  overlay
-  br_netfilter
-  EOF
-  modprobe overlay
-  modprobe br_netfilter
-  cat <<EOF >/etc/sysctl.d/k8s.conf
-  net.bridge.bridge-nf-call-iptables = 1
-  net.bridge.bridge-nf-call-ip6tables = 1
-  net.ipv4.ip_forward = 1
-  EOF
-  sysctl --system
-
-  # Install containerd
-  # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
-  # https://github.com/containerd/containerd/blob/main/docs/getting-started.md#option-2-from-apt-get-or-dnf
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >/etc/apt/sources.list.d/docker.list
-  apt-get update
-  apt-get install -y containerd.io
-
-  # Configure containerd to use the systemd cgroup driver
-  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
-  mkdir -p /etc/containerd
-  containerd config default >/etc/containerd/config.toml
-  sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
-  systemctl restart containerd
-
-  # Install Kubernetes tools
-  # https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
-  apt-get install -y apt-transport-https
-  curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-  apt-get update
-  apt-get install -y kubeadm kubelet kubectl
-  apt-mark hold kubelet kubeadm kubectl 
-
-  # Initialise cluster
-  kubeadm init \
-    --token "${local.token}" \
-    --token-ttl 15m \
-    --apiserver-cert-extra-sans "${aws_eip.master.public_ip}" \
-  %{if var.pod_network_cidr_block != null~}
-    --pod-network-cidr "${var.pod_network_cidr_block}" \
-  %{endif~}
-    --node-name master
-
-  # Prepare kubeconfig file for download
-  cp /etc/kubernetes/admin.conf /home/ubuntu
-  pwd >/home/ubuntu/out
-  whoami >>/home/ubuntu/out
-  ls -l /home/ubuntu/admin.conf >>/home/ubuntu/out
-  sudo chown ubuntu:ubuntu /home/ubuntu/admin.conf 
-  ls -l /home/ubuntu/admin.conf >>/home/ubuntu/out
-  kubectl --kubeconfig /home/ubuntu/admin.conf config set-cluster kubernetes --server https://${aws_eip.master.public_ip}:6443
-
-  # Indicate completion
-  touch /home/ubuntu/done
-  EEOOFF
+  # Saved in: /var/lib/cloud/instances/<instance-id>/user-data.txt [1]
+  # Logs in:  /var/log/cloud-init-output.log [2]
+  # [1] https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
+  # [2] https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
+  user_data = templatefile(
+    "${path.module}/user-data.tftpl",
+    {
+      node              = "master",
+      token             = local.token,
+      cidr              = var.pod_network_cidr_block
+      master_public_ip  = aws_eip.master.public_ip,
+      master_private_ip = null,
+      worker_index      = null
+    }
+  )
 }
 
 resource "aws_instance" "workers" {
@@ -232,59 +181,17 @@ resource "aws_instance" "workers" {
     aws_security_group.ingress_ssh.id
   ]
   tags      = merge(local.tags, { "terraform-kubeadm:node" = "worker-${count.index}" })
-  # Run as root by AWS [1], logs in /var/log/cloud-init-output.log [1]
-  # [1] https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
-  user_data = <<-EEOOFF
-  #!/bin/bash
-
-  # Networking requirements
-  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#install-and-configure-prerequisites
-  cat <<EOF >/etc/modules-load.d/k8s.conf
-  overlay
-  br_netfilter
-  EOF
-  modprobe overlay
-  modprobe br_netfilter
-  cat <<EOF >/etc/sysctl.d/k8s.conf
-  net.bridge.bridge-nf-call-iptables = 1
-  net.bridge.bridge-nf-call-ip6tables = 1
-  net.ipv4.ip_forward = 1
-  EOF
-  sysctl --system
-
-  # Install containerd
-  # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
-  # https://github.com/containerd/containerd/blob/main/docs/getting-started.md#option-2-from-apt-get-or-dnf
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >/etc/apt/sources.list.d/docker.list
-  apt-get update
-  apt-get install -y containerd.io
-
-  # Configure containerd to use the systemd cgroup driver
-  # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
-  mkdir -p /etc/containerd
-  containerd config default >/etc/containerd/config.toml
-  sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
-  systemctl restart containerd
-
-  # Install Kubernetes tools
-  # https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl
-  apt-get install -y apt-transport-https
-  curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list
-  apt-get update
-  apt-get install -y kubeadm kubelet kubectl
-  apt-mark hold kubelet kubeadm kubectl 
-
-  # Join cluster
-  kubeadm join ${aws_instance.master.private_ip}:6443 \
-    --token ${local.token} \
-    --discovery-token-unsafe-skip-ca-verification \
-    --node-name worker-${count.index}
-
-  # Indicate completion
-  touch /home/ubuntu/done
-  EEOOFF
+  user_data = templatefile(
+    "${path.module}/user-data.tftpl",
+    {
+      node              = "worker",
+      token             = local.token,
+      cidr              = null,
+      master_public_ip  = null,
+      master_private_ip = aws_instance.master.private_ip,
+      worker_index      = count.index
+    }
+  )
 }
 
 #------------------------------------------------------------------------------#
